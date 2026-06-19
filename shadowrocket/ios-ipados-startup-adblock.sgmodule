@@ -1,0 +1,21 @@
+#!name=GY Startup AdBlock
+#!desc=iOS/iPadOS Shadowrocket module for startup/splash ad cleanup, with Bilibili splash endpoints handled explicitly.
+#!author=Codex
+#!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+
+[Script]
+Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
+Bilibili Feed Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
+Generic Startup Ads = type=http-response,pattern=^https?:\/\/[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise|promotion|commercial).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
+
+[URL Rewrite]
+^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad - reject-dict
+^https?:\/\/cm\.bilibili\.com\/ - reject
+
+[Rule]
+DOMAIN-SUFFIX,cm.bilibili.com,REJECT
+URL-REGEX,^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad,REJECT
+
+[MITM]
+hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com
