@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v2 - 200 No-Fill
-#!desc=Build 2026-06-19 22:30 CST. iOS/iPadOS Shadowrocket module using retry-friendly 200 no-fill responses for Xiaocan ad SDKs, with Bilibili startup ad cleanup.
+#!name=GY Startup AdBlock v3 - Fast No-Fill
+#!desc=Build 2026-06-19 22:42 CST. iOS/iPadOS Shadowrocket module using retry-friendly 200 no-fill responses and fast GDT tail handling for Xiaocan, with Bilibili startup ad cleanup.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -8,12 +8,14 @@
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Bilibili Feed Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Generic Startup Ads = type=http-response,pattern=^https?:\/\/[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise|promotion|commercial).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
-Xiaocan Ad SDK No Fill = type=http-response,pattern=^https?:\/\/(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/sdk\/get_ads|gromore\.pangolin-sdk-toutiao\.com\/api\/ad\/union\/mediation\/exchange|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/univ)(?:\/|\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
+Xiaocan Ad SDK No Fill = type=http-response,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/get_ads|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/univ)(?:\/|\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
 
 [URL Rewrite]
 ^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad - reject-dict
 ^https?:\/\/cm\.bilibili\.com\/ - reject
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject
+^https?:\/\/win\.gdt\.qq\.com\/win_notice\.fcg - reject-200
+^https?:\/\/oth\.(?:eve|str)\.mdt\.qq\.com\/ - reject-200
 
 [Rule]
 DOMAIN,api-access.pangolin-sdk-toutiao.com,DIRECT
@@ -21,12 +23,15 @@ DOMAIN,api-access.pangolin-sdk-toutiao1.com,DIRECT
 DOMAIN,api-access.pangolin-sdk-toutiao-b.com,DIRECT
 DOMAIN,gromore.pangolin-sdk-toutiao.com,DIRECT
 DOMAIN,log-api.pangolin-sdk-toutiao.com,DIRECT
+DOMAIN,log-api.pangolin-sdk-toutiao-b.com,DIRECT
 DOMAIN,analytics.oceanengine.com,DIRECT
 DOMAIN,toblog.ctobsnssdk.com,DIRECT
 DOMAIN,mi.gdt.qq.com,DIRECT
 DOMAIN,win.gdt.qq.com,DIRECT
 DOMAIN,sdk.e.qq.com,DIRECT
 DOMAIN,sdkquic.e.qq.com,DIRECT
+DOMAIN,oth.eve.mdt.qq.com,DIRECT
+DOMAIN,oth.str.mdt.qq.com,DIRECT
 DOMAIN,mobads-logs.baidu.com,DIRECT
 DOMAIN,sdk.beizi.biz,DIRECT
 DOMAIN,sdklog.zhangyuyidong.cn,DIRECT
@@ -55,4 +60,4 @@ DOMAIN-SUFFIX,fancydsp.com,REJECT-DICT
 DOMAIN,dig.bdurl.net,REJECT-DICT
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mi.gdt.qq.com, win.gdt.qq.com, open.e.kuaishou.com
+hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com

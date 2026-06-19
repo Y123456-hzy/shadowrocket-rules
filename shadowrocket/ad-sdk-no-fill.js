@@ -29,11 +29,11 @@
 })();
 
 function isPangolinAdFetch(url) {
-  return /^https?:\/\/api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/sdk\/get_ads(?:\/|\?)/i.test(url);
+  return /^https?:\/\/(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/get_ads(?:\/|\?)/i.test(url);
 }
 
 function isPangolinExchange(url) {
-  return /^https?:\/\/gromore\.pangolin-sdk-toutiao\.com\/api\/ad\/union\/mediation\/exchange(?:\/|\?)/i.test(url);
+  return /^https?:\/\/(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?)/i.test(url);
 }
 
 function isGdtAdFetch(url) {
