@@ -1,5 +1,5 @@
 #!name=GY Startup AdBlock
-#!desc=iOS/iPadOS Shadowrocket module for startup/splash ad cleanup, with Bilibili splash endpoints handled explicitly.
+#!desc=iOS/iPadOS Shadowrocket module for startup/splash ad cleanup, with Bilibili and Xiaocan ad endpoints handled explicitly.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -12,10 +12,35 @@ Generic Startup Ads = type=http-response,pattern=^https?:\/\/[^\/]+\/.*(?:splash
 [URL Rewrite]
 ^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad - reject-dict
 ^https?:\/\/cm\.bilibili\.com\/ - reject
+^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject
+^https?:\/\/[^\/]*pangolin-sdk-toutiao[^\/]*\/api\/ad\/union\/sdk\/(?:get_ads|stats|settings)\/ - reject-dict
 
 [Rule]
 DOMAIN-SUFFIX,cm.bilibili.com,REJECT
 URL-REGEX,^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+DOMAIN-KEYWORD,zijieapi,REJECT
+DOMAIN-SUFFIX,sigmob.cn,REJECT
+DOMAIN-SUFFIX,1rtb.net,REJECT
+DOMAIN-SUFFIX,1rtb.com,REJECT
+DOMAIN-SUFFIX,beizi.biz,REJECT
+DOMAIN-SUFFIX,datads.cn,REJECT
+DOMAIN-SUFFIX,mentamob.com,REJECT
+DOMAIN-SUFFIX,advlion.com,REJECT
+DOMAIN-SUFFIX,fancyapi.com,REJECT
+DOMAIN-SUFFIX,zhangyuyidong.cn,REJECT
+DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
+DOMAIN,open.e.kuaishou.com,REJECT
+DOMAIN-SUFFIX,gdt.qq.com,REJECT
+DOMAIN-SUFFIX,e.qq.com,REJECT
+DOMAIN-SUFFIX,mdt.qq.com,REJECT
+DOMAIN-SUFFIX,ugdtimg.com,REJECT
+DOMAIN-SUFFIX,mobads.baidu.com,REJECT
+DOMAIN-SUFFIX,mobads-logs.baidu.com,REJECT
+DOMAIN,dig.bdurl.net,REJECT
 
 [MITM]
 hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com
