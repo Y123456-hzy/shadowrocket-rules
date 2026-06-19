@@ -13,37 +13,33 @@ Generic Startup Ads = type=http-response,pattern=^https?:\/\/[^\/]+\/.*(?:splash
 ^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad - reject-dict
 ^https?:\/\/cm\.bilibili\.com\/ - reject
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject
-^https?:\/\/(?:api-access|gromore)[^\/]*\.pangolin-sdk-toutiao[^\/]*\/api\/ad\/union\/(?:sdk\/(?:get_ads|stats|settings)|mediation\/(?:config|exchange))\/ - reject-dict
+^https?:\/\/(?:api-access|gromore)[^\/]*\.pangolin-sdk-toutiao[^\/]*\/api\/ad\/union\/(?:sdk\/get_ads|mediation\/exchange)\/ - reject-dict
 
 [Rule]
 DOMAIN-SUFFIX,cm.bilibili.com,REJECT
 URL-REGEX,^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad,REJECT
-DOMAIN-KEYWORD,zijieapi,REJECT
-DOMAIN-SUFFIX,oceanengine.com,REJECT
-DOMAIN-SUFFIX,ctobsnssdk.com,REJECT
-DOMAIN-SUFFIX,sigmob.cn,REJECT
-DOMAIN-SUFFIX,1rtb.net,REJECT
-DOMAIN-SUFFIX,1rtb.com,REJECT
-DOMAIN-SUFFIX,beizi.biz,REJECT
-DOMAIN-SUFFIX,datads.cn,REJECT
-DOMAIN-SUFFIX,mentamob.com,REJECT
-DOMAIN-SUFFIX,advlion.com,REJECT
-DOMAIN-SUFFIX,fancyapi.com,REJECT
-DOMAIN-SUFFIX,zhangyuyidong.cn,REJECT
-DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
-DOMAIN,open.e.kuaishou.com,REJECT
-DOMAIN,open.e.kuaishou.cn,REJECT
-DOMAIN,gdfp.gifshow.com,REJECT
-DOMAIN-SUFFIX,gdt.qq.com,REJECT
-DOMAIN-SUFFIX,e.qq.com,REJECT
-DOMAIN-SUFFIX,mdt.qq.com,REJECT
-DOMAIN-SUFFIX,ugdtimg.com,REJECT
-DOMAIN-SUFFIX,mobads.baidu.com,REJECT
-DOMAIN-SUFFIX,mobads-logs.baidu.com,REJECT
-DOMAIN-SUFFIX,etoolads.cn,REJECT
-DOMAIN-SUFFIX,tobidad.cn,REJECT
-DOMAIN-SUFFIX,fancydsp.com,REJECT
-DOMAIN,dig.bdurl.net,REJECT
+DOMAIN-SUFFIX,sigmob.cn,REJECT-DICT
+DOMAIN-SUFFIX,1rtb.net,REJECT-DICT
+DOMAIN-SUFFIX,1rtb.com,REJECT-DICT
+DOMAIN-SUFFIX,beizi.biz,REJECT-DICT
+DOMAIN-SUFFIX,datads.cn,REJECT-DICT
+DOMAIN-SUFFIX,mentamob.com,REJECT-DICT
+DOMAIN-SUFFIX,advlion.com,REJECT-DICT
+DOMAIN-SUFFIX,fancyapi.com,REJECT-DICT
+DOMAIN-SUFFIX,zhangyuyidong.cn,REJECT-DICT
+DOMAIN-SUFFIX,hubcloud.com.cn,REJECT-DICT
+DOMAIN,open.e.kuaishou.com,REJECT-DICT
+DOMAIN,open.e.kuaishou.cn,REJECT-DICT
+DOMAIN,gdfp.gifshow.com,REJECT-DICT
+DOMAIN-SUFFIX,gdt.qq.com,REJECT-DICT
+DOMAIN-SUFFIX,e.qq.com,REJECT-DICT
+DOMAIN-SUFFIX,mdt.qq.com,REJECT-DICT
+DOMAIN-SUFFIX,ugdtimg.com,REJECT-DICT
+DOMAIN-SUFFIX,mobads.baidu.com,REJECT-DICT
+DOMAIN-SUFFIX,etoolads.cn,REJECT-DICT
+DOMAIN-SUFFIX,tobidad.cn,REJECT-DICT
+DOMAIN-SUFFIX,fancydsp.com,REJECT-DICT
+DOMAIN,dig.bdurl.net,REJECT-DICT
 
 [MITM]
 hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com
