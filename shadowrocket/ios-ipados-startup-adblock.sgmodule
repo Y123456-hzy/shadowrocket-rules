@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v3 - Fast No-Fill
-#!desc=Build 2026-06-19 22:42 CST. iOS/iPadOS Shadowrocket module using retry-friendly 200 no-fill responses and fast GDT tail handling for Xiaocan, with Bilibili startup ad cleanup.
+#!name=GY Startup AdBlock v4 - Instant No-Fill
+#!desc=Build 2026-06-19 22:56 CST. iOS/iPadOS Shadowrocket module using request-stage 200 no-fill/ack responses to stop Xiaocan startup ad SDK retry tails, with Bilibili startup ad cleanup.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -8,14 +8,17 @@
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Bilibili Feed Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Generic Startup Ads = type=http-response,pattern=^https?:\/\/[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise|promotion|commercial).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
-Xiaocan Ad SDK No Fill = type=http-response,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/get_ads|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/univ)(?:\/|\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
+Xiaocan Ad SDK Instant No Fill = type=http-request,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/(?:get_ads|stats\/batch)(?:\/|\?|$)|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?|$)|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg(?:\?|$)|win\.gdt\.qq\.com\/win_notice\.fcg(?:\?|$)|oth\.(?:eve|str)\.mdt\.qq\.com\/|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/(?:univ|logBatch)(?:\?|$)|api-htp\.beizi\.biz\/mb\/sdk0\/json(?:\?|$)|t2\.fancyapi\.com\/(?:b|e)(?:\?|$)|g\.fancyapi\.com\/s2s(?:\?|$)|sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)(?:\?|$)|sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p(?:\?|$)),timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
+Xiaocan Ad SDK No Fill Fallback = type=http-response,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/(?:get_ads|stats\/batch)(?:\/|\?|$)|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?|$)|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg(?:\?|$)|win\.gdt\.qq\.com\/win_notice\.fcg(?:\?|$)|oth\.(?:eve|str)\.mdt\.qq\.com\/|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/(?:univ|logBatch)(?:\?|$)|api-htp\.beizi\.biz\/mb\/sdk0\/json(?:\?|$)|t2\.fancyapi\.com\/(?:b|e)(?:\?|$)|g\.fancyapi\.com\/s2s(?:\?|$)|sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)(?:\?|$)|sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p(?:\?|$)),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
 
 [URL Rewrite]
 ^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad - reject-dict
 ^https?:\/\/cm\.bilibili\.com\/ - reject
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject
+^https?:\/\/api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/sdk\/stats\/batch\/ - reject-200
 ^https?:\/\/win\.gdt\.qq\.com\/win_notice\.fcg - reject-200
 ^https?:\/\/oth\.(?:eve|str)\.mdt\.qq\.com\/ - reject-200
+^https?:\/\/open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/logBatch - reject-200
 
 [Rule]
 DOMAIN,api-access.pangolin-sdk-toutiao.com,DIRECT
@@ -36,6 +39,18 @@ DOMAIN,mobads-logs.baidu.com,DIRECT
 DOMAIN,sdk.beizi.biz,DIRECT
 DOMAIN,sdklog.zhangyuyidong.cn,DIRECT
 DOMAIN,open.e.kuaishou.com,DIRECT
+DOMAIN,adsmartget.datads.cn,DIRECT
+DOMAIN,tm.sigmob.cn,DIRECT
+DOMAIN,dc.sigmob.cn,DIRECT
+DOMAIN,adservice.sigmob.cn,DIRECT
+DOMAIN,mobads.baidu.com,DIRECT
+DOMAIN,sdk.1rtb.net,DIRECT
+DOMAIN,api-v3.mentamob.com,DIRECT
+DOMAIN,c.tobidad.cn,DIRECT
+DOMAIN,mpcfg.fancydsp.com,DIRECT
+DOMAIN,c.etoolads.cn,DIRECT
+DOMAIN,dig.bdurl.net,DIRECT
+DOMAIN,gdfp.gifshow.com,DIRECT
 DOMAIN-SUFFIX,cm.bilibili.com,REJECT
 URL-REGEX,^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad,REJECT
 DOMAIN-SUFFIX,sigmob.cn,REJECT-DICT
