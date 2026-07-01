@@ -5,8 +5,10 @@
  */
 
 (function () {
-  var url = ($request && $request.url) || "";
-  var body = ($response && $response.body) || "";
+  var request = typeof $request !== "undefined" && $request ? $request : {};
+  var response = typeof $response !== "undefined" && $response ? $response : null;
+  var url = request.url || "";
+  var body = (response && response.body) || "";
 
   if (!body) return $done({});
 
@@ -22,7 +24,7 @@
   } else if (isBilibiliFeed(url)) {
     json = cleanBilibiliFeed(json);
   } else if (isStartupAdUrl(url)) {
-    json = cleanGenericAdJson(json);
+    json = cleanGenericAdJson(json, 0);
   }
 
   return $done({ body: JSON.stringify(json) });
@@ -78,19 +80,26 @@ function cleanBilibiliFeed(root) {
       .filter(function (item) {
         return !looksLikeAd(item);
       })
-      .map(cleanGenericAdJson);
+      .map(function (item) {
+        return cleanGenericAdJson(item, 0);
+      });
   }
 
   return root;
 }
 
-function cleanGenericAdJson(value) {
+function cleanGenericAdJson(value, depth) {
+  depth = depth || 0;
+  if (depth > 12) return value;
+
   if (Array.isArray(value)) {
     return value
       .filter(function (item) {
         return !looksLikeAd(item);
       })
-      .map(cleanGenericAdJson);
+      .map(function (item) {
+        return cleanGenericAdJson(item, depth + 1);
+      });
   }
 
   if (!value || typeof value !== "object") return value;
@@ -108,7 +117,7 @@ function cleanGenericAdJson(value) {
       return;
     }
 
-    value[key] = cleanGenericAdJson(value[key]);
+    value[key] = cleanGenericAdJson(value[key], depth + 1);
   });
 
   return value;

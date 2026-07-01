@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v6.1 - Broadnet Safe Bypass
-#!desc=Build 2026-07-01 18:05 CST. iOS/iPadOS Shadowrocket module keeps Coolapk ad cleanup with a lighter feed-only filter and excludes China Broadnet 10099 service hall from generic startup API rewriting.
+#!name=GY Startup AdBlock v6.2 - Safer No-Fill
+#!desc=Build 2026-07-01 18:40 CST. iOS/iPadOS Shadowrocket module lets ad SDK scripts return retry-friendly no-fill JSON, keeps Coolapk feed cleanup light, and excludes China Broadnet 10099 service hall from generic startup API rewriting.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -17,20 +17,7 @@ Xiaocan Ad SDK No Fill Fallback = type=http-response,pattern=^https?:\/\/(?:(?:a
 ^https?:\/\/api\.coolapk\.com\/v6\/search\?.*type=hotSearch - reject-dict
 ^https?:\/\/cm\.bilibili\.com\/ - reject
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject-200
-^https?:\/\/api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/sdk\/get_ads\/ - reject-dict
-^https?:\/\/api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/sdk\/stats\/batch\/ - reject-200
-^https?:\/\/api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com\/api\/ad\/union\/mediation\/exchange\/ - reject-dict
-^https?:\/\/(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg - reject-dict
-^https?:\/\/win\.gdt\.qq\.com\/win_notice\.fcg - reject-200
-^https?:\/\/oth\.(?:eve|str)\.mdt\.qq\.com\/ - reject-200
-^https?:\/\/open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/univ - reject-dict
-^https?:\/\/open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/logBatch - reject-200
-^http:\/\/api-htp\.beizi\.biz\/mb\/sdk0\/json - reject-dict
-^http:\/\/t2\.fancyapi\.com\/(?:b|e)\? - reject-dict
-^http:\/\/g\.fancyapi\.com\/s2s\? - reject-dict
 ^http:\/\/sdk\.1rtb\.net\/sdk\/req_ad - reject-dict
-^http:\/\/sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)\? - reject-dict
-^http:\/\/sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p - reject-dict
 ^http:\/\/idfa2\.shuzilm\.cn\/ - reject-200
 ^http:\/\/iuni\.telecome\.cn\/ - reject-200
 
@@ -40,6 +27,7 @@ DOMAIN,api-access.pangolin-sdk-toutiao.com,DIRECT
 DOMAIN,api-access.pangolin-sdk-toutiao1.com,DIRECT
 DOMAIN,api-access.pangolin-sdk-toutiao-b.com,DIRECT
 DOMAIN,gromore.pangolin-sdk-toutiao.com,DIRECT
+DOMAIN,is.snssdk.com,DIRECT
 DOMAIN,log-api.pangolin-sdk-toutiao.com,DIRECT
 DOMAIN,log-api.pangolin-sdk-toutiao-b.com,DIRECT
 DOMAIN,analytics.oceanengine.com,DIRECT
@@ -51,8 +39,13 @@ DOMAIN,sdkquic.e.qq.com,DIRECT
 DOMAIN,oth.eve.mdt.qq.com,DIRECT
 DOMAIN,oth.str.mdt.qq.com,DIRECT
 DOMAIN,mobads-logs.baidu.com,DIRECT
+DOMAIN,api-htp.beizi.biz,DIRECT
 DOMAIN,sdk.beizi.biz,DIRECT
+DOMAIN,g.fancyapi.com,DIRECT
+DOMAIN,t2.fancyapi.com,DIRECT
+DOMAIN,sdk.zhangyuyidong.cn,DIRECT
 DOMAIN,sdklog.zhangyuyidong.cn,DIRECT
+DOMAIN,sdktmp.hubcloud.com.cn,DIRECT
 DOMAIN,open.e.kuaishou.com,DIRECT
 DOMAIN-SUFFIX,cm.bilibili.com,REJECT
 URL-REGEX,^https?:\/\/app\.bilibili\.com\/x\/v2\/dm\/ad,REJECT
