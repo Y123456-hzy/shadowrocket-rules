@@ -62,6 +62,13 @@ function scriptPaths(moduleText) {
 }
 
 function requestText(url) {
+  const curl = childProcess.spawnSync("curl", ["-fsSL", "--max-time", "20", url], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: "pipe"
+  });
+  if (curl.status === 0) return Promise.resolve(curl.stdout);
+
   return new Promise((resolve, reject) => {
     const request = https.get(url, { timeout: 15000 }, (response) => {
       if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -78,6 +85,10 @@ function requestText(url) {
       request.destroy(new Error(url + " timed out"));
     });
     request.on("error", reject);
+  }).catch((error) => {
+    const curlError = (curl.stderr || curl.stdout || "").trim();
+    const nodeError = error && (error.message || error.code || error.name) ? (error.message || error.code || error.name) : String(error);
+    throw new Error(url + " unavailable; curl: " + (curlError || "exit " + curl.status) + "; node: " + nodeError);
   });
 }
 
