@@ -58,4 +58,6 @@ Local check:
 ```bash
 node test-shadowrocket-rules.js
 node audit-shadowrocket-quality.js
+node release-check-shadowrocket.js
+node release-check-shadowrocket.js --remote
 ```
