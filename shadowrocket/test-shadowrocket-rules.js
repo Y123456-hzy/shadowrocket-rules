@@ -10,6 +10,8 @@ const vm = require("vm");
 
 const root = __dirname;
 const modulePath = path.join(root, "ios-ipados-startup-adblock.sgmodule");
+const quiet = process.argv.indexOf("--quiet") >= 0;
+let assertions = 0;
 
 function runScript(file, options) {
   const code = fs.readFileSync(path.join(root, file), "utf8");
@@ -28,10 +30,11 @@ function runScript(file, options) {
 }
 
 function assert(name, condition) {
+  assertions += 1;
   if (!condition) {
     throw new Error("Failed: " + name);
   }
-  console.log("ok - " + name);
+  if (!quiet) console.log("ok - " + name);
 }
 
 function extractSection(name) {
@@ -46,6 +49,12 @@ function patternFromScriptLine(line) {
 
 function regexFromRewriteLine(line) {
   return new RegExp(line.split(/\s+/)[0].replace(/\\\//g, "/"));
+}
+
+function compileScriptPattern(line) {
+  const match = line.match(/pattern=([^,]+)/);
+  if (!match) return null;
+  return new RegExp(match[1].replace(/\\\//g, "/"));
 }
 
 function parseRuleLine(line) {
@@ -102,6 +111,7 @@ function testScripts() {
 function testModuleRules() {
   const scripts = extractSection("Script");
   const rules = extractSection("Rule").map(parseRuleLine);
+  const rawRules = extractSection("Rule");
   const mitmLine = extractSection("MITM").find(function (line) {
     return line.indexOf("hostname =") === 0;
   }) || "";
@@ -113,6 +123,42 @@ function testModuleRules() {
   const rewrites = extractSection("URL Rewrite").map(function (line) {
     return { line: line, re: regexFromRewriteLine(line) };
   });
+
+  scripts.forEach(function (line) {
+    assert("Script pattern compiles: " + line.split(" = ")[0], compileScriptPattern(line) instanceof RegExp);
+    assert("Script has a timeout: " + line.split(" = ")[0], /(?:^|,)timeout=\d+(?:,|$)/.test(line));
+    assert("Script has a raw script path: " + line.split(" = ")[0], /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line));
+    if (/type=http-response/.test(line)) {
+      assert("Response script declares body requirement: " + line.split(" = ")[0], /(?:^|,)requires-body=1(?:,|$)/.test(line));
+      assert("Response script declares max-size: " + line.split(" = ")[0], /(?:^|,)max-size=\d+(?:,|$)/.test(line));
+    }
+  });
+
+  rewrites.forEach(function (item) {
+    assert("URL Rewrite pattern compiles: " + item.line, item.re instanceof RegExp);
+  });
+
+  assert("MITM hostname uses %APPEND%", /^hostname\s*=\s*%APPEND%/.test(mitmLine));
+  assert("MITM avoids wildcard hosts", !mitmHosts.some(function (host) { return host.indexOf("*") >= 0; }));
+  assert("MITM does not include 10099 service hall", !mitmHosts.some(function (host) { return /(?:^|\.)10099\.com\.cn$/i.test(host); }));
+
+  const duplicateRules = rawRules.filter(function (line, index) {
+    return rawRules.indexOf(line) !== index;
+  });
+  assert("Rule section has no duplicate lines", duplicateRules.length === 0);
+
+  const duplicateMitmHosts = mitmHosts.filter(function (host, index) {
+    return mitmHosts.indexOf(host) !== index;
+  });
+  assert("MITM hostname list has no duplicates", duplicateMitmHosts.length === 0);
+
+  const firstRejectIndex = rules.findIndex(function (rule) {
+    return /^REJECT/.test(rule.policy || "");
+  });
+  const directAfterReject = firstRejectIndex >= 0 && rules.slice(firstRejectIndex + 1).some(function (rule) {
+    return rule.policy === "DIRECT";
+  });
+  assert("Direct allow rules appear before reject rules", !directAfterReject);
 
   scripts.forEach(function (line) {
     const match = line.match(/script-path=https:\/\/raw\.githubusercontent\.com\/Y123456-hzy\/shadowrocket-rules\/main\/shadowrocket\/([^,]+)/);
@@ -127,6 +173,8 @@ function testModuleRules() {
   assert("10099 is excluded from generic startup cleanup", !genericRe.test("https://m.10099.com.cn/h5wap/promotion"));
   assert("Generic startup cleanup still catches startup ad paths", genericRe.test("https://example.com/splash/list"));
   assert("Generic startup cleanup avoids broad promotion paths", !genericRe.test("https://example.com/promotion/list"));
+  assert("Generic startup cleanup avoids broad commercial paths", !genericRe.test("https://example.com/commercial/list"));
+  assert("Generic startup cleanup avoids broad campaign paths", !genericRe.test("https://example.com/campaign/list"));
 
   const sdkScriptPatterns = scripts
     .filter(function (line) {
@@ -210,4 +258,4 @@ function testModuleRules() {
 
 testScripts();
 testModuleRules();
-console.log("all Shadowrocket local checks passed");
+console.log("all Shadowrocket local checks passed (" + assertions + " checks)");

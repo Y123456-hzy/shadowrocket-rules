@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v6.4 - Low False Positive
-#!desc=Build 2026-07-02 00:25 CST. iOS/iPadOS Shadowrocket module tightens generic startup matching, removes direct/reject suffix conflicts, and keeps no-fill SDK hosts aligned with MITM.
+#!name=GY Startup AdBlock v6.5 - Quality Gates
+#!desc=Build 2026-07-02 01:45 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup and is guarded by local checks for regex validity, script metadata, MITM hygiene, and rule conflicts.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png

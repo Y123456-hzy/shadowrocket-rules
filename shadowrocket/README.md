@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.4 - Low False Positive
+GY Startup AdBlock v6.5 - Quality Gates
 ```
 
 Subscription module:
@@ -40,6 +40,7 @@ Notes:
 - HTTPS hosts handled by no-fill scripts are explicitly listed in `%APPEND%` MITM, and exact-domain direct/reject conflicts are checked locally.
 - Generic startup cleanup is intentionally limited to high-signal startup/ad URL terms and avoids broad business words such as `promotion` or `commercial`.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
+- Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.
 - The generic rule only works for HTTPS JSON endpoints that Shadowrocket can MITM. Apps with certificate pinning, protobuf, or non-HTTP startup ads may need app-specific rules.
 - Keep this repository public so Shadowrocket can fetch the raw module and script URLs without authentication.
