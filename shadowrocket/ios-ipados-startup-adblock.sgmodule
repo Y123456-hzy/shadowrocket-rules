@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v6.2 - Safer No-Fill
-#!desc=Build 2026-07-01 18:40 CST. iOS/iPadOS Shadowrocket module lets ad SDK scripts return retry-friendly no-fill JSON, keeps Coolapk feed cleanup light, and excludes China Broadnet 10099 service hall from generic startup API rewriting.
+#!name=GY Startup AdBlock v6.3 - Cleaner Rule Order
+#!desc=Build 2026-07-01 22:55 CST. iOS/iPadOS Shadowrocket module keeps no-fill SDK hosts aligned with MITM and avoids contradictory direct/reject rules while preserving the China Broadnet 10099 bypass.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -55,13 +55,9 @@ DOMAIN-SUFFIX,telecome.cn,REJECT-DICT
 DOMAIN-SUFFIX,sigmob.cn,REJECT-DICT
 DOMAIN-SUFFIX,1rtb.net,REJECT-DICT
 DOMAIN-SUFFIX,1rtb.com,REJECT-DICT
-DOMAIN,api-htp.beizi.biz,REJECT-DICT
 DOMAIN,adsmartget.datads.cn,REJECT-DICT
 DOMAIN-SUFFIX,mentamob.com,REJECT-DICT
 DOMAIN-SUFFIX,advlion.com,REJECT-DICT
-DOMAIN,g.fancyapi.com,REJECT-DICT
-DOMAIN,t2.fancyapi.com,REJECT-DICT
-DOMAIN,sdk.zhangyuyidong.cn,REJECT-DICT
 DOMAIN-SUFFIX,hubcloud.com.cn,REJECT-DICT
 DOMAIN,open.e.kuaishou.cn,REJECT-DICT
 DOMAIN,gdfp.gifshow.com,REJECT-DICT
@@ -74,4 +70,4 @@ DOMAIN-SUFFIX,fancydsp.com,REJECT-DICT
 DOMAIN,dig.bdurl.net,REJECT-DICT
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com
+hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn

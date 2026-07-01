@@ -48,6 +48,15 @@ function regexFromRewriteLine(line) {
   return new RegExp(line.split(/\s+/)[0].replace(/\\\//g, "/"));
 }
 
+function parseRuleLine(line) {
+  const parts = line.split(",");
+  return {
+    type: parts[0],
+    value: parts[1],
+    policy: parts[2]
+  };
+}
+
 function testScripts() {
   const splash = runScript("startup-ad-clean.js", {
     url: "https://app.bilibili.com/x/v2/splash/list",
@@ -92,6 +101,15 @@ function testScripts() {
 
 function testModuleRules() {
   const scripts = extractSection("Script");
+  const rules = extractSection("Rule").map(parseRuleLine);
+  const mitmLine = extractSection("MITM").find(function (line) {
+    return line.indexOf("hostname =") === 0;
+  }) || "";
+  const mitmHosts = mitmLine
+    .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
+    .split(",")
+    .map(function (host) { return host.trim(); })
+    .filter(Boolean);
   const rewrites = extractSection("URL Rewrite").map(function (line) {
     return { line: line, re: regexFromRewriteLine(line) };
   });
@@ -129,6 +147,41 @@ function testModuleRules() {
   sdkSamples.forEach(function (url) {
     assert("SDK sample is covered by no-fill script: " + url, sdkScriptPatterns.some(function (re) { return re.test(url); }));
     assert("SDK sample is not preempted by URL Rewrite: " + url, !rewrites.some(function (item) { return item.re.test(url); }));
+  });
+
+  [
+    "api-access.pangolin-sdk-toutiao.com",
+    "api-access.pangolin-sdk-toutiao1.com",
+    "api-access.pangolin-sdk-toutiao-b.com",
+    "is.snssdk.com",
+    "gromore.pangolin-sdk-toutiao.com",
+    "mi.gdt.qq.com",
+    "win.gdt.qq.com",
+    "oth.eve.mdt.qq.com",
+    "oth.str.mdt.qq.com",
+    "open.e.kuaishou.com",
+    "api-htp.beizi.biz",
+    "t2.fancyapi.com",
+    "g.fancyapi.com",
+    "sdk.zhangyuyidong.cn",
+    "sdktmp.hubcloud.com.cn"
+  ].forEach(function (host) {
+    assert("MITM includes no-fill HTTPS host: " + host, mitmHosts.indexOf(host) >= 0);
+  });
+
+  const exactDomainPolicies = {};
+  rules.forEach(function (rule) {
+    if (rule.type !== "DOMAIN") return;
+    exactDomainPolicies[rule.value] = exactDomainPolicies[rule.value] || [];
+    exactDomainPolicies[rule.value].push(rule.policy);
+  });
+
+  Object.keys(exactDomainPolicies).forEach(function (domain) {
+    const policies = exactDomainPolicies[domain];
+    assert(
+      "Exact domain has no direct/reject conflict: " + domain,
+      !(policies.indexOf("DIRECT") >= 0 && policies.some(function (policy) { return /^REJECT/.test(policy); }))
+    );
   });
 }
 
