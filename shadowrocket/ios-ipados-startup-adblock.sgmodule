@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v6.3 - Cleaner Rule Order
-#!desc=Build 2026-07-01 22:55 CST. iOS/iPadOS Shadowrocket module keeps no-fill SDK hosts aligned with MITM and avoids contradictory direct/reject rules while preserving the China Broadnet 10099 bypass.
+#!name=GY Startup AdBlock v6.4 - Low False Positive
+#!desc=Build 2026-07-02 00:25 CST. iOS/iPadOS Shadowrocket module tightens generic startup matching, removes direct/reject suffix conflicts, and keeps no-fill SDK hosts aligned with MITM.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
@@ -8,7 +8,7 @@
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Bilibili Feed Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Coolapk Feed Ads = type=http-response,pattern=^https?:\/\/api\.coolapk\.com\/v6\/(?:main\/indexV8|dataList|page\/dataList|feed\/(?:detail|replyList))(?:\?|$),requires-body=1,max-size=1048576,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/coolapk-clean.js
-Generic Startup Ads = type=http-response,pattern=^https?:\/\/(?!(?:[^\/]+\.)?10099\.com\.cn(?::\d+)?(?:\/|$))[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise|promotion|commercial).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
+Generic Startup Ads = type=http-response,pattern=^https?:\/\/(?!(?:[^\/]+\.)?10099\.com\.cn(?::\d+)?(?:\/|$))[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js
 Xiaocan Ad SDK Instant No Fill = type=http-request,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/(?:get_ads|stats\/batch)(?:\/|\?|$)|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?|$)|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg(?:\?|$)|win\.gdt\.qq\.com\/win_notice\.fcg(?:\?|$)|oth\.(?:eve|str)\.mdt\.qq\.com\/|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/(?:univ|logBatch)(?:\?|$)|api-htp\.beizi\.biz\/mb\/sdk0\/json(?:\?|$)|t2\.fancyapi\.com\/(?:b|e)(?:\?|$)|g\.fancyapi\.com\/s2s(?:\?|$)|sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)(?:\?|$)|sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p(?:\?|$)),timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
 Xiaocan Ad SDK No Fill Fallback = type=http-response,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/(?:get_ads|stats\/batch)(?:\/|\?|$)|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?|$)|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg(?:\?|$)|win\.gdt\.qq\.com\/win_notice\.fcg(?:\?|$)|oth\.(?:eve|str)\.mdt\.qq\.com\/|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/(?:univ|logBatch)(?:\?|$)|api-htp\.beizi\.biz\/mb\/sdk0\/json(?:\?|$)|t2\.fancyapi\.com\/(?:b|e)(?:\?|$)|g\.fancyapi\.com\/s2s(?:\?|$)|sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)(?:\?|$)|sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p(?:\?|$)),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js
 
@@ -58,10 +58,8 @@ DOMAIN-SUFFIX,1rtb.com,REJECT-DICT
 DOMAIN,adsmartget.datads.cn,REJECT-DICT
 DOMAIN-SUFFIX,mentamob.com,REJECT-DICT
 DOMAIN-SUFFIX,advlion.com,REJECT-DICT
-DOMAIN-SUFFIX,hubcloud.com.cn,REJECT-DICT
 DOMAIN,open.e.kuaishou.cn,REJECT-DICT
 DOMAIN,gdfp.gifshow.com,REJECT-DICT
-DOMAIN-SUFFIX,mdt.qq.com,REJECT-DICT
 DOMAIN-SUFFIX,ugdtimg.com,REJECT-DICT
 DOMAIN-SUFFIX,mobads.baidu.com,REJECT-DICT
 DOMAIN-SUFFIX,etoolads.cn,REJECT-DICT

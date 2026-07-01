@@ -73,7 +73,7 @@ function testScripts() {
   assert("Bilibili feed ads are filtered", feedBody.data.items.length === 1 && feedBody.data.items[0].id === 1);
 
   const generic = runScript("startup-ad-clean.js", {
-    url: "https://example.com/promotion/list",
+    url: "https://example.com/splash/list",
     body: JSON.stringify({ data: { user: { name: "ok" }, ad_list: [{ id: 1 }], interval: 8 } })
   });
   const genericBody = JSON.parse(generic.body);
@@ -114,12 +114,19 @@ function testModuleRules() {
     return { line: line, re: regexFromRewriteLine(line) };
   });
 
+  scripts.forEach(function (line) {
+    const match = line.match(/script-path=https:\/\/raw\.githubusercontent\.com\/Y123456-hzy\/shadowrocket-rules\/main\/shadowrocket\/([^,]+)/);
+    if (!match) return;
+    assert("Script path maps to a local file: " + match[1], fs.existsSync(path.join(root, match[1])));
+  });
+
   const genericLine = scripts.find(function (line) {
     return line.indexOf("Generic Startup Ads") === 0;
   });
   const genericRe = patternFromScriptLine(genericLine);
   assert("10099 is excluded from generic startup cleanup", !genericRe.test("https://m.10099.com.cn/h5wap/promotion"));
-  assert("Generic startup cleanup still catches ad paths", genericRe.test("https://example.com/promotion"));
+  assert("Generic startup cleanup still catches startup ad paths", genericRe.test("https://example.com/splash/list"));
+  assert("Generic startup cleanup avoids broad promotion paths", !genericRe.test("https://example.com/promotion/list"));
 
   const sdkScriptPatterns = scripts
     .filter(function (line) {
@@ -176,13 +183,29 @@ function testModuleRules() {
     exactDomainPolicies[rule.value].push(rule.policy);
   });
 
+  const exactConflicts = [];
   Object.keys(exactDomainPolicies).forEach(function (domain) {
     const policies = exactDomainPolicies[domain];
-    assert(
-      "Exact domain has no direct/reject conflict: " + domain,
-      !(policies.indexOf("DIRECT") >= 0 && policies.some(function (policy) { return /^REJECT/.test(policy); }))
-    );
+    if (policies.indexOf("DIRECT") >= 0 && policies.some(function (policy) { return /^REJECT/.test(policy); })) {
+      exactConflicts.push(domain + " => " + policies.join("/"));
+    }
   });
+  assert("Exact domains have no direct/reject conflicts", exactConflicts.length === 0);
+
+  const directDomains = rules
+    .filter(function (rule) { return rule.type === "DOMAIN" && rule.policy === "DIRECT"; })
+    .map(function (rule) { return rule.value; });
+  const rejectSuffixes = rules
+    .filter(function (rule) { return rule.type === "DOMAIN-SUFFIX" && /^REJECT/.test(rule.policy || ""); })
+    .map(function (rule) { return rule.value; });
+
+  const suffixConflicts = [];
+  directDomains.forEach(function (domain) {
+    rejectSuffixes.forEach(function (suffix) {
+      if (domain === suffix || domain.endsWith("." + suffix)) suffixConflicts.push(domain + " < " + suffix);
+    });
+  });
+  assert("Direct domains are not shadowed by reject suffixes", suffixConflicts.length === 0);
 }
 
 testScripts();

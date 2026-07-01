@@ -39,7 +39,7 @@ function isBilibiliFeed(url) {
 }
 
 function isStartupAdUrl(url) {
-  return /(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise|promotion|commercial)/i.test(url);
+  return /(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise)/i.test(url);
 }
 
 function cleanBilibiliSplash(root) {
