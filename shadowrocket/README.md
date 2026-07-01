@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.5 - Quality Gates
+GY Startup AdBlock v6.6 - Audited Quality
 ```
 
 Subscription module:
@@ -41,12 +41,21 @@ Notes:
 - Generic startup cleanup is intentionally limited to high-signal startup/ad URL terms and avoids broad business words such as `promotion` or `commercial`.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
+- The quality audit scores release readiness across metadata, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, and the `10099.com.cn` bypass.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.
 - The generic rule only works for HTTPS JSON endpoints that Shadowrocket can MITM. Apps with certificate pinning, protobuf, or non-HTTP startup ads may need app-specific rules.
 - Keep this repository public so Shadowrocket can fetch the raw module and script URLs without authentication.
+
+Reference patterns:
+
+- `blackmatrix7/ios_rule_script`: app-specific rewrite entries, explicit `requires-body`, `max-size`, `timeout`, and `%APPEND%` MITM.
+- `Johnshall/Shadowrocket-ADBlock-Rules-Forever`: separate rule profiles and generated large-list hygiene for different user modes.
+- `app2smile/rules`: narrow app-specific modules instead of broad global rewrites when app behavior is known.
+- `bai1zi/shadowrocket-surge-loon-qx`: complex modules keep hostname scope explicit and avoid replacing the user's MITM list.
 
 Local check:
 
 ```bash
 node test-shadowrocket-rules.js
+node audit-shadowrocket-quality.js
 ```
