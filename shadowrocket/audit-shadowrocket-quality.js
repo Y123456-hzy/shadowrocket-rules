@@ -29,6 +29,14 @@ function headerInt(key) {
   return match ? Number(match[1]) : null;
 }
 
+function hostsFromAppendLine(line) {
+  return String(line || "")
+    .replace(/^.*=\s*%APPEND%\s*/, "")
+    .split(",")
+    .map((host) => host.trim())
+    .filter(Boolean);
+}
+
 function scriptPattern(line) {
   const match = line.match(/pattern=([^,]+)/);
   return match ? match[1].replace(/\\\//g, "/") : "";
@@ -62,6 +70,9 @@ const scripts = linesInSection("Script");
 const rewrites = linesInSection("URL Rewrite");
 const rawRules = linesInSection("Rule");
 const rules = rawRules.map(parseRule);
+const general = linesInSection("General");
+const forceLine = general.find((line) => line.indexOf("force-http-engine-hosts =") === 0) || "";
+const forceHosts = hostsFromAppendLine(forceLine);
 let behaviorFixture = null;
 try {
   behaviorFixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
@@ -73,11 +84,7 @@ const fixtureCases = behaviorFixture && behaviorFixture.schema_version === 1 && 
   : [];
 const fixtureScripts = new Set(fixtureCases.map((item) => item.script));
 const mitmLine = linesInSection("MITM").find((line) => line.indexOf("hostname =") === 0) || "";
-const mitmHosts = mitmLine
-  .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
-  .split(",")
-  .map((host) => host.trim())
-  .filter(Boolean);
+const mitmHosts = hostsFromAppendLine(mitmLine);
 const countedMetadata = {
   "http-request-script": scripts.filter((line) => /type=http-request/.test(line)).length,
   "http-response-script": scripts.filter((line) => /type=http-response/.test(line)).length,
@@ -85,8 +92,9 @@ const countedMetadata = {
   domain: rules.filter((rule) => rule.type === "DOMAIN").length,
   "domain-suffix": rules.filter((rule) => rule.type === "DOMAIN-SUFFIX").length,
   "url-regex": rules.filter((rule) => rule.type === "URL-REGEX").length,
+  "force-http-engine-hosts": forceHosts.length,
   mitm: mitmHosts.length,
-  total: scripts.length + rewrites.length + rawRules.length + mitmHosts.length
+  total: scripts.length + rewrites.length + rawRules.length + forceHosts.length + mitmHosts.length
 };
 
 const sdkSamples = [
@@ -133,6 +141,7 @@ const sdkRegexes = scripts
 const rewriteRegexOnly = rewriteRegexes.map((item) => item.compiled.re).filter(Boolean);
 
 const duplicateRules = uniqueDuplicates(rawRules);
+const duplicateForceHosts = uniqueDuplicates(forceHosts);
 const duplicateMitmHosts = uniqueDuplicates(mitmHosts);
 const exactDomainPolicies = {};
 rules.forEach((rule) => {
@@ -165,13 +174,14 @@ const checks = [];
 
 addCheck(checks, "module metadata", 8, ["#!name", "#!desc", "#!author", "#!homepage", "#!icon", "#!version", "#!build"].every((prefix) => headerLines.some((line) => line.startsWith(prefix))), "name/desc/author/homepage/icon/version/build");
 addCheck(checks, "counted release metadata", 8, Object.keys(countedMetadata).every((key) => headerInt(key) === countedMetadata[key]), "script, rewrite, rule, MITM, and total counts");
-addCheck(checks, "required sections", 7, ["Script", "URL Rewrite", "Rule", "MITM"].every((name) => sectionText(name).length > 0), "[Script], [URL Rewrite], [Rule], [MITM]");
+addCheck(checks, "required sections", 7, ["General", "Script", "URL Rewrite", "Rule", "MITM"].every((name) => sectionText(name).length > 0), "[General], [Script], [URL Rewrite], [Rule], [MITM]");
 addCheck(checks, "script metadata", 12, scripts.every((line) => /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line) && /(?:^|,)timeout=\d+(?:,|$)/.test(line) && (!/type=http-response/.test(line) || (/(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line)))), "raw script paths, timeouts, response body limits");
 addCheck(checks, "script paths resolve locally", 8, scripts.every((line) => {
   const match = line.match(/script-path=https:\/\/raw\.githubusercontent\.com\/Y123456-hzy\/shadowrocket-rules\/main\/shadowrocket\/([^,]+)/);
   return !match || fs.existsSync(path.join(root, match[1]));
 }), "published paths match local files");
 addCheck(checks, "all regexes compile", 10, scriptRegexes.every((item) => item.compiled.ok) && rewriteRegexes.every((item) => item.compiled.ok), "script and URL Rewrite regexes");
+addCheck(checks, "HTTP engine host hygiene", 8, /^force-http-engine-hosts\s*=\s*%APPEND%/.test(forceLine) && duplicateForceHosts.length === 0 && forceHosts.length === mitmHosts.length && forceHosts.every((host, index) => host === mitmHosts[index]) && !forceHosts.some((host) => host.indexOf("*") >= 0) && !forceHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "%APPEND%, exact hosts, aligned with MITM");
 addCheck(checks, "MITM hygiene", 12, /^hostname\s*=\s*%APPEND%/.test(mitmLine) && duplicateMitmHosts.length === 0 && !mitmHosts.some((host) => host.indexOf("*") >= 0) && !mitmHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "%APPEND%, no wildcard, no duplicates, no 10099");
 addCheck(checks, "rule conflict hygiene", 12, duplicateRules.length === 0 && exactConflicts.length === 0 && suffixConflicts.length === 0 && !rules.slice(rules.findIndex((rule) => /^REJECT/.test(rule.policy || "")) + 1).some((rule) => rule.policy === "DIRECT"), "no duplicate rules, no direct/reject conflicts, direct before reject");
 addCheck(checks, "low false-positive generic rule", 12, genericRe && !genericRe.test("https://m.10099.com.cn/h5wap/promotion") && genericRe.test("https://example.com/splash/list") && !genericRe.test("https://example.com/promotion/list") && !genericRe.test("https://example.com/commercial/list") && !genericRe.test("https://example.com/campaign/list"), "catch startup terms, avoid broad business terms");

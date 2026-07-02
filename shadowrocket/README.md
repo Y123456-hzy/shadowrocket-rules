@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.8 - Counted Release
+GY Startup AdBlock v6.9 - HTTP Engine Scoped
 ```
 
 Subscription module:
@@ -37,12 +37,12 @@ Notes:
 - Bilibili startup ads are handled by rewriting `app.bilibili.com/x/v2/splash/list`, `show`, and `event/list2` into a valid empty response.
 - Coolapk ad cleanup is kept in v6, but the script is narrowed to feed/list endpoints and skips the startup `main/init` API to reduce content-loading overhead.
 - Ad SDK endpoints covered by `ad-sdk-no-fill.js` are left to the script instead of duplicated URL Rewrite rejects, so apps receive retry-friendly JSON no-fill responses.
-- HTTPS hosts handled by no-fill scripts are explicitly listed in `%APPEND%` MITM, and exact-domain direct/reject conflicts are checked locally.
+- HTTPS hosts handled by scripts or rewrites are explicitly listed in `%APPEND%` `force-http-engine-hosts` and `%APPEND%` MITM, and exact-domain direct/reject conflicts are checked locally.
 - Generic startup cleanup is intentionally limited to high-signal startup/ad URL terms and avoids broad business words such as `promotion` or `commercial`.
 - Inside matched startup responses, ambiguous business keys such as `promotion`, `commercial`, and `campaign` are no longer erased wholesale; the script only removes contents that look ad-like.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
-- The module header includes counted release metadata for script, rewrite, rule, and MITM totals, and release checks recompute those counts before publishing.
+- The module header includes counted release metadata for script, rewrite, rule, HTTP-engine host, and MITM totals, and release checks recompute those counts before publishing.
 - The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
 - Behavior fixtures live in `fixtures/behavior-cases.json`. Add real app logs there as small request/body/assertion samples before changing broad cleanup logic.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.

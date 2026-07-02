@@ -50,6 +50,14 @@ function headerInt(key) {
   return match ? Number(match[1]) : null;
 }
 
+function hostsFromAppendLine(line) {
+  return String(line || "")
+    .replace(/^.*=\s*%APPEND%\s*/, "")
+    .split(",")
+    .map(function (host) { return host.trim(); })
+    .filter(Boolean);
+}
+
 function patternFromScriptLine(line) {
   return new RegExp(line.match(/pattern=([^,]+)/)[1].replace(/\\\//g, "/"));
 }
@@ -161,17 +169,18 @@ function testScripts() {
 }
 
 function testModuleRules() {
+  const general = extractSection("General");
   const scripts = extractSection("Script");
   const rules = extractSection("Rule").map(parseRuleLine);
   const rawRules = extractSection("Rule");
+  const forceLine = general.find(function (line) {
+    return line.indexOf("force-http-engine-hosts =") === 0;
+  }) || "";
+  const forceHosts = hostsFromAppendLine(forceLine);
   const mitmLine = extractSection("MITM").find(function (line) {
     return line.indexOf("hostname =") === 0;
   }) || "";
-  const mitmHosts = mitmLine
-    .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
-    .split(",")
-    .map(function (host) { return host.trim(); })
-    .filter(Boolean);
+  const mitmHosts = hostsFromAppendLine(mitmLine);
   const rewrites = extractSection("URL Rewrite").map(function (line) {
     return { line: line, re: regexFromRewriteLine(line) };
   });
@@ -183,13 +192,22 @@ function testModuleRules() {
     domain: rules.filter(function (rule) { return rule.type === "DOMAIN"; }).length,
     "domain-suffix": rules.filter(function (rule) { return rule.type === "DOMAIN-SUFFIX"; }).length,
     "url-regex": rules.filter(function (rule) { return rule.type === "URL-REGEX"; }).length,
+    "force-http-engine-hosts": forceHosts.length,
     mitm: mitmHosts.length,
-    total: scripts.length + rewrites.length + rawRules.length + mitmHosts.length
+    total: scripts.length + rewrites.length + rawRules.length + forceHosts.length + mitmHosts.length
   };
 
   Object.keys(countedMetadata).forEach(function (key) {
     assert("Header count matches " + key, headerInt(key) === countedMetadata[key]);
   });
+
+  assert("General has scoped force-http-engine-hosts", /^force-http-engine-hosts\s*=\s*%APPEND%/.test(forceLine));
+  assert("HTTP engine hosts avoid wildcard hosts", !forceHosts.some(function (host) { return host.indexOf("*") >= 0; }));
+  assert("HTTP engine hosts do not include 10099 service hall", !forceHosts.some(function (host) { return /(?:^|\.)10099\.com\.cn$/i.test(host); }));
+  const duplicateForceHosts = forceHosts.filter(function (host, index) {
+    return forceHosts.indexOf(host) !== index;
+  });
+  assert("HTTP engine hostname list has no duplicates", duplicateForceHosts.length === 0);
 
   scripts.forEach(function (line) {
     assert("Script pattern compiles: " + line.split(" = ")[0], compileScriptPattern(line) instanceof RegExp);
@@ -208,6 +226,7 @@ function testModuleRules() {
   assert("MITM hostname uses %APPEND%", /^hostname\s*=\s*%APPEND%/.test(mitmLine));
   assert("MITM avoids wildcard hosts", !mitmHosts.some(function (host) { return host.indexOf("*") >= 0; }));
   assert("MITM does not include 10099 service hall", !mitmHosts.some(function (host) { return /(?:^|\.)10099\.com\.cn$/i.test(host); }));
+  assert("HTTP engine hosts align with MITM hosts", forceHosts.length === mitmHosts.length && forceHosts.every(function (host, index) { return host === mitmHosts[index]; }));
 
   const duplicateRules = rawRules.filter(function (line, index) {
     return rawRules.indexOf(line) !== index;

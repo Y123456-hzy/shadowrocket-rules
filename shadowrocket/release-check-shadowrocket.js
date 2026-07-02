@@ -71,16 +71,23 @@ function headerInt(moduleText, key) {
   return match ? Number(match[1]) : null;
 }
 
-function countedMetadata(moduleText) {
-  const scripts = linesInSection(moduleText, "Script");
-  const rewrites = linesInSection(moduleText, "URL Rewrite");
-  const rules = linesInSection(moduleText, "Rule");
-  const mitmLine = linesInSection(moduleText, "MITM").find((line) => line.indexOf("hostname =") === 0) || "";
-  const mitmHosts = mitmLine
-    .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
+function hostsFromAppendLine(line) {
+  return String(line || "")
+    .replace(/^.*=\s*%APPEND%\s*/, "")
     .split(",")
     .map((host) => host.trim())
     .filter(Boolean);
+}
+
+function countedMetadata(moduleText) {
+  const general = linesInSection(moduleText, "General");
+  const scripts = linesInSection(moduleText, "Script");
+  const rewrites = linesInSection(moduleText, "URL Rewrite");
+  const rules = linesInSection(moduleText, "Rule");
+  const forceLine = general.find((line) => line.indexOf("force-http-engine-hosts =") === 0) || "";
+  const forceHosts = hostsFromAppendLine(forceLine);
+  const mitmLine = linesInSection(moduleText, "MITM").find((line) => line.indexOf("hostname =") === 0) || "";
+  const mitmHosts = hostsFromAppendLine(mitmLine);
 
   return {
     "http-request-script": scripts.filter((line) => /type=http-request/.test(line)).length,
@@ -89,8 +96,9 @@ function countedMetadata(moduleText) {
     domain: rules.filter((line) => line.indexOf("DOMAIN,") === 0).length,
     "domain-suffix": rules.filter((line) => line.indexOf("DOMAIN-SUFFIX,") === 0).length,
     "url-regex": rules.filter((line) => line.indexOf("URL-REGEX,") === 0).length,
+    "force-http-engine-hosts": forceHosts.length,
     mitm: mitmHosts.length,
-    total: scripts.length + rewrites.length + rules.length + mitmHosts.length
+    total: scripts.length + rewrites.length + rules.length + forceHosts.length + mitmHosts.length
   };
 }
 
