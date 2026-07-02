@@ -82,6 +82,11 @@
       "id": "remote-release-drift-check",
       "source_ids": ["johnshall-release"],
       "local_evidence": "remote release check verifies raw module/script reachability plus SHA-256 content equality"
+    },
+    {
+      "id": "remote-reference-source-check",
+      "source_ids": ["johnshall-release"],
+      "local_evidence": "remote release check verifies public reference source URLs are still reachable"
     }
   ]
 }

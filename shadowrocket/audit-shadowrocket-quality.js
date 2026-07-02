@@ -242,6 +242,12 @@ function referencePatternHasEvidence(pattern) {
       /remote script content matches local file/.test(releaseCheckText);
   }
 
+  if (pattern.id === "remote-reference-source-check") {
+    return /referenceSources\(\)/.test(releaseCheckText) &&
+      /reference source is reachable/.test(releaseCheckText) &&
+      /requestText\(source\.url\)/.test(releaseCheckText);
+  }
+
   return false;
 }
 
@@ -262,7 +268,7 @@ addCheck(checks, "rule conflict hygiene", 12, duplicateRules.length === 0 && exa
 addCheck(checks, "low false-positive generic rule", 12, genericRe && !genericRe.test("https://m.10099.com.cn/h5wap/promotion") && genericRe.test("https://example.com/splash/list") && !genericRe.test("https://example.com/promotion/list") && !genericRe.test("https://example.com/commercial/list") && !genericRe.test("https://example.com/campaign/list"), "catch startup terms, avoid broad business terms");
 addCheck(checks, "no-fill script coverage", 14, sdkSamples.every((url) => sdkRegexes.some((re) => re.test(url))) && sdkSamples.every((url) => !rewriteRegexOnly.some((re) => re.test(url))) && noFillHosts.every((host) => mitmHosts.indexOf(host) >= 0), "covered by script, not preempted by rewrite, MITM hosts aligned");
 addCheck(checks, "behavior fixture coverage", 10, fixtureCases.length >= 10 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file)) && fixtureCases.every((item) => item.name && item.script && item.url && Array.isArray(item.assertions) && item.assertions.length > 0), "fixture schema, sample count, and all response scripts covered");
-addCheck(checks, "public reference pattern coverage", 10, referenceSources.length >= 4 && referencePatterns.length >= 8 && uniqueDuplicates(referencePatterns.map((pattern) => pattern.id)).length === 0 && referenceSources.every((source) => source.id && /^https:\/\/github\.com\//.test(source.url || "")) && referencePatterns.every(referencePatternHasEvidence), "public source manifest and local evidence");
+addCheck(checks, "public reference pattern coverage", 10, referenceSources.length >= 4 && referencePatterns.length >= 9 && uniqueDuplicates(referencePatterns.map((pattern) => pattern.id)).length === 0 && referenceSources.every((source) => source.id && /^https:\/\/github\.com\//.test(source.url || "")) && referencePatterns.every(referencePatternHasEvidence), "public source manifest and local evidence");
 addCheck(checks, "10099 service hall bypass", 5, rawRules.indexOf("DOMAIN-SUFFIX,10099.com.cn,DIRECT") >= 0 && !mitmHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "direct and not MITM");
 
 const total = checks.reduce((sum, check) => sum + check.weight, 0);

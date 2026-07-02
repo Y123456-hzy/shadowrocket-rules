@@ -14,6 +14,7 @@ const path = require("path");
 const root = __dirname;
 const moduleFile = path.join(root, "ios-ipados-startup-adblock.sgmodule");
 const readmeFile = path.join(root, "README.md");
+const referenceFile = path.join(root, "references", "public-patterns.json");
 const runRemote = process.argv.indexOf("--remote") >= 0;
 const rawModuleUrl = "https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ios-ipados-startup-adblock.sgmodule";
 const rawScriptBase = "https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/";
@@ -64,6 +65,11 @@ function readmeName(text) {
 function scriptPaths(moduleText) {
   const matches = moduleText.match(/script-path=https:\/\/raw\.githubusercontent\.com\/Y123456-hzy\/shadowrocket-rules\/main\/shadowrocket\/[^,\n]+/g) || [];
   return Array.from(new Set(matches.map((match) => match.replace(/^script-path=.*\/shadowrocket\//, ""))));
+}
+
+function referenceSources() {
+  const manifest = JSON.parse(read(referenceFile));
+  return manifest && Array.isArray(manifest.sources) ? manifest.sources : [];
 }
 
 function linesInSection(moduleText, name) {
@@ -142,6 +148,7 @@ async function main() {
   const moduleText = read(moduleFile);
   const readmeText = read(readmeFile);
   const scripts = scriptPaths(moduleText);
+  const references = referenceSources();
 
   ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js", "test-shadowrocket-rules.js", "audit-shadowrocket-quality.js"].forEach((file) => {
     run("node", ["--check", file]);
@@ -179,6 +186,10 @@ async function main() {
       const remoteScript = await requestText(rawScriptBase + file);
       assert("remote script is reachable: " + file, remoteScript.length > 0);
       assert("remote script content matches local file: " + file, sha256(remoteScript) === sha256(read(path.join(root, file))));
+    }
+    for (const source of references) {
+      const remoteSource = await requestText(source.url);
+      assert("reference source is reachable: " + source.id, remoteSource.length > 0);
     }
   }
 

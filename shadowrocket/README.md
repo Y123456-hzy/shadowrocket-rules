@@ -47,10 +47,10 @@ Notes:
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
 - Script entries explicitly set `script-update-interval=0`, mirroring app-specific public modules that pin script update behavior in the module itself.
 - The module header includes counted release metadata for script, rewrite, rule, HTTP-engine host, and MITM totals, and release checks recompute those counts before publishing.
-- Remote release checks compare SHA-256 content hashes for the raw module and each published script, so GitHub cache or sync drift is caught before calling a release good.
+- Remote release checks compare SHA-256 content hashes for the raw module and each published script, and verify public reference-source links before calling a release good.
 - The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
 - Behavior fixtures live in `fixtures/behavior-cases.json`. Add real app logs there as small request/body/assertion samples before changing broad cleanup logic.
-- Public-rule reference patterns live in `references/public-patterns.json`; the audit checks that each borrowed quality pattern has current local evidence.
+- Public-rule reference patterns live in `references/public-patterns.json`; the audit checks that each borrowed quality pattern has current local evidence, and `--remote` checks that the source links are still reachable.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.
 - The generic rule only works for HTTPS JSON endpoints that Shadowrocket can MITM. Apps with certificate pinning, protobuf, or non-HTTP startup ads may need app-specific rules.
 - Keep this repository public so Shadowrocket can fetch the raw module and script URLs without authentication.
