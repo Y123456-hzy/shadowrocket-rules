@@ -213,7 +213,7 @@ function referencePatternHasEvidence(pattern) {
   }
 
   if (pattern.id === "narrow-app-specific-rules") {
-    return hasKnownScriptPrefix("Bilibili Splash Ads") && hasKnownScriptPrefix("Bilibili Feed Ads") && hasKnownScriptPrefix("Coolapk Feed Ads") && hasKnownScriptPrefix("Generic Startup Ads");
+    return hasKnownScriptPrefix("Bilibili Splash Ads") && hasKnownScriptPrefix("Bilibili Feed Ads") && hasKnownScriptPrefix("Bilibili Tab Entries") && hasKnownScriptPrefix("Coolapk Feed Ads") && hasKnownScriptPrefix("Generic Startup Ads");
   }
 
   if (pattern.id === "low-false-positive-bypass") {
@@ -226,7 +226,7 @@ function referencePatternHasEvidence(pattern) {
   }
 
   if (pattern.id === "behavior-regression-fixtures") {
-    return fixtureCases.length >= 8 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file));
+    return fixtureCases.length >= 9 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file));
   }
 
   if (pattern.id === "remote-release-drift-check") {
@@ -253,7 +253,7 @@ addCheck(checks, "MITM hygiene", 12, /^hostname\s*=\s*%APPEND%/.test(mitmLine) &
 addCheck(checks, "rule conflict hygiene", 12, duplicateRules.length === 0 && exactConflicts.length === 0 && suffixConflicts.length === 0 && !rules.slice(rules.findIndex((rule) => /^REJECT/.test(rule.policy || "")) + 1).some((rule) => rule.policy === "DIRECT"), "no duplicate rules, no direct/reject conflicts, direct before reject");
 addCheck(checks, "low false-positive generic rule", 12, genericRe && !genericRe.test("https://m.10099.com.cn/h5wap/promotion") && genericRe.test("https://example.com/splash/list") && !genericRe.test("https://example.com/promotion/list") && !genericRe.test("https://example.com/commercial/list") && !genericRe.test("https://example.com/campaign/list"), "catch startup terms, avoid broad business terms");
 addCheck(checks, "no-fill script coverage", 14, sdkSamples.every((url) => sdkRegexes.some((re) => re.test(url))) && sdkSamples.every((url) => !rewriteRegexOnly.some((re) => re.test(url))) && noFillHosts.every((host) => mitmHosts.indexOf(host) >= 0), "covered by script, not preempted by rewrite, MITM hosts aligned");
-addCheck(checks, "behavior fixture coverage", 10, fixtureCases.length >= 8 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file)) && fixtureCases.every((item) => item.name && item.script && item.url && Array.isArray(item.assertions) && item.assertions.length > 0), "fixture schema, sample count, and all response scripts covered");
+addCheck(checks, "behavior fixture coverage", 10, fixtureCases.length >= 9 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file)) && fixtureCases.every((item) => item.name && item.script && item.url && Array.isArray(item.assertions) && item.assertions.length > 0), "fixture schema, sample count, and all response scripts covered");
 addCheck(checks, "public reference pattern coverage", 10, referenceSources.length >= 3 && referencePatterns.length >= 7 && uniqueDuplicates(referencePatterns.map((pattern) => pattern.id)).length === 0 && referenceSources.every((source) => source.id && /^https:\/\/github\.com\//.test(source.url || "")) && referencePatterns.every(referencePatternHasEvidence), "public source manifest and local evidence");
 addCheck(checks, "10099 service hall bypass", 5, rawRules.indexOf("DOMAIN-SUFFIX,10099.com.cn,DIRECT") >= 0 && !mitmHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "direct and not MITM");
 

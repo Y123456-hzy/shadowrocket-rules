@@ -1,19 +1,19 @@
-#!name=GY Startup AdBlock v6.10 - Script Update Pinned
-#!desc=Build 2026-07-02 09:41 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and pins script update metadata for predictable rule behavior.
+#!name=GY Startup AdBlock v6.11 - Bilibili Tab Scoped
+#!desc=Build 2026-07-02 09:46 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds narrow Bilibili tab-entry cleanup.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
-#!version=6.10
-#!build=2026-07-02 09:41 CST
+#!version=6.11
+#!build=2026-07-02 09:46 CST
 #!http-request-script=1
-#!http-response-script=5
+#!http-response-script=6
 #!url-rewrite=7
 #!domain=28
 #!domain-suffix=15
 #!url-regex=1
 #!force-http-engine-hosts=24
 #!mitm=24
-#!total=105
+#!total=106
 
 [General]
 force-http-engine-hosts = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
@@ -21,6 +21,7 @@ force-http-engine-hosts = %APPEND% app.bilibili.com, api.bilibili.com, api.bilia
 [Script]
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js,script-update-interval=0
 Bilibili Feed Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js,script-update-interval=0
+Bilibili Tab Entries = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/tab\/v2(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js,script-update-interval=0
 Coolapk Feed Ads = type=http-response,pattern=^https?:\/\/api\.coolapk\.com\/v6\/(?:main\/indexV8|dataList|page\/dataList|feed\/(?:detail|replyList))(?:\?|$),requires-body=1,max-size=1048576,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/coolapk-clean.js,script-update-interval=0
 Generic Startup Ads = type=http-response,pattern=^https?:\/\/(?!(?:[^\/]+\.)?10099\.com\.cn(?::\d+)?(?:\/|$))[^\/]+\/.*(?:splash|launch|startup|start[-_]?up|open[-_]?screen|advert|advertise).*,requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js,script-update-interval=0
 Xiaocan Ad SDK Instant No Fill = type=http-request,pattern=^https?:\/\/(?:(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|is\.snssdk\.com)\/api\/ad\/union\/sdk\/(?:get_ads|stats\/batch)(?:\/|\?|$)|(?:api-access\.pangolin-sdk-toutiao(?:1|-b)?\.com|gromore\.pangolin-sdk-toutiao\.com)\/api\/ad\/union\/mediation\/exchange(?:\/|\?|$)|(?:mi|win)\.gdt\.qq\.com\/gdt_mview\.fcg(?:\?|$)|win\.gdt\.qq\.com\/win_notice\.fcg(?:\?|$)|oth\.(?:eve|str)\.mdt\.qq\.com\/|open\.e\.kuaishou\.com\/rest\/e\/v3\/open\/(?:univ|logBatch)(?:\?|$)|api-htp\.beizi\.biz\/mb\/sdk0\/json(?:\?|$)|t2\.fancyapi\.com\/(?:b|e)(?:\?|$)|g\.fancyapi\.com\/s2s(?:\?|$)|sdk\.zhangyuyidong\.cn\/(?:sdk\/config|api\/zysdk)(?:\?|$)|sdktmp\.hubcloud\.com\.cn\/v1\/api\/sdk\/task\/list\/p(?:\?|$)),timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/ad-sdk-no-fill.js,script-update-interval=0

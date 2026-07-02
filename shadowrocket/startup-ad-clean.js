@@ -23,6 +23,8 @@
     json = cleanBilibiliSplash(json);
   } else if (isBilibiliFeed(url)) {
     json = cleanBilibiliFeed(json);
+  } else if (isBilibiliTab(url)) {
+    json = cleanBilibiliTab(json);
   } else if (isStartupAdUrl(url)) {
     json = cleanGenericAdJson(json, 0);
   }
@@ -36,6 +38,10 @@ function isBilibiliSplash(url) {
 
 function isBilibiliFeed(url) {
   return /^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index(?:\?|$)/i.test(url);
+}
+
+function isBilibiliTab(url) {
+  return /^https?:\/\/app\.bilibili\.com\/x\/resource\/show\/tab\/v2(?:\?|$)/i.test(url);
 }
 
 function isStartupAdUrl(url) {
@@ -86,6 +92,32 @@ function cleanBilibiliFeed(root) {
   }
 
   return root;
+}
+
+function cleanBilibiliTab(root) {
+  if (!root || !root.data) return root;
+
+  if (Array.isArray(root.data.top)) {
+    root.data.top = fixBilibiliPositions(root.data.top.filter(function (item) {
+      return item && item.name !== "游戏中心";
+    }));
+  }
+
+  if (Array.isArray(root.data.bottom)) {
+    root.data.bottom = fixBilibiliPositions(root.data.bottom.filter(function (item) {
+      if (!item) return false;
+      return item.name !== "发布" && item.name !== "会员购" && item.tab_id !== "会员购Bottom";
+    }));
+  }
+
+  return root;
+}
+
+function fixBilibiliPositions(items) {
+  return items.map(function (item, index) {
+    if (item && typeof item === "object") item.pos = index + 1;
+    return item;
+  });
 }
 
 function cleanGenericAdJson(value, depth) {

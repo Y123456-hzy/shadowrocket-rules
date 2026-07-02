@@ -36,6 +36,36 @@
       ]
     },
     {
+      "name": "Bilibili tab entries are narrowed",
+      "script": "startup-ad-clean.js",
+      "url": "https://app.bilibili.com/x/resource/show/tab/v2",
+      "body": {
+        "data": {
+          "top": [
+            { "id": 1, "name": "消息", "pos": 9 },
+            { "id": 2, "name": "游戏中心", "pos": 10 },
+            { "id": 3, "name": "历史", "pos": 11 }
+          ],
+          "bottom": [
+            { "id": 4, "name": "首页", "pos": 9 },
+            { "id": 5, "name": "发布", "pos": 10 },
+            { "id": 6, "name": "会员购", "tab_id": "mall", "pos": 11 },
+            { "id": 7, "name": "我的", "pos": 12 }
+          ]
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.top.length", "equals": 2 },
+        { "path": "bodyJson.data.top.0.name", "equals": "消息" },
+        { "path": "bodyJson.data.top.1.name", "equals": "历史" },
+        { "path": "bodyJson.data.top.1.pos", "equals": 2 },
+        { "path": "bodyJson.data.bottom.length", "equals": 2 },
+        { "path": "bodyJson.data.bottom.0.name", "equals": "首页" },
+        { "path": "bodyJson.data.bottom.1.name", "equals": "我的" },
+        { "path": "bodyJson.data.bottom.1.pos", "equals": 2 }
+      ]
+    },
+    {
       "name": "Generic startup cleanup avoids unrelated content",
       "script": "startup-ad-clean.js",
       "url": "https://example.com/splash/list",

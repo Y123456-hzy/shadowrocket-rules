@@ -51,7 +51,7 @@
     {
       "id": "narrow-app-specific-rules",
       "source_ids": ["app2smile-modules"],
-      "local_evidence": "known Bilibili and Coolapk endpoints use app-specific script patterns before generic startup cleanup"
+      "local_evidence": "known Bilibili splash/feed/tab and Coolapk endpoints use app-specific script patterns before generic startup cleanup"
     },
     {
       "id": "low-false-positive-bypass",
