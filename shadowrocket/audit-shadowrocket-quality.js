@@ -12,7 +12,10 @@ const path = require("path");
 const root = __dirname;
 const modulePath = path.join(root, "ios-ipados-startup-adblock.sgmodule");
 const fixturePath = path.join(root, "fixtures", "behavior-cases.json");
+const referencePath = path.join(root, "references", "public-patterns.json");
+const releaseCheckPath = path.join(root, "release-check-shadowrocket.js");
 const text = fs.readFileSync(modulePath, "utf8");
+const releaseCheckText = fs.readFileSync(releaseCheckPath, "utf8");
 const json = process.argv.indexOf("--json") >= 0;
 
 function linesInSection(name) {
@@ -79,10 +82,23 @@ try {
 } catch (error) {
   behaviorFixture = null;
 }
+let publicReference = null;
+try {
+  publicReference = JSON.parse(fs.readFileSync(referencePath, "utf8"));
+} catch (error) {
+  publicReference = null;
+}
 const fixtureCases = behaviorFixture && behaviorFixture.schema_version === 1 && Array.isArray(behaviorFixture.cases)
   ? behaviorFixture.cases
   : [];
 const fixtureScripts = new Set(fixtureCases.map((item) => item.script));
+const referenceSources = publicReference && publicReference.schema_version === 1 && Array.isArray(publicReference.sources)
+  ? publicReference.sources
+  : [];
+const referencePatterns = publicReference && publicReference.schema_version === 1 && Array.isArray(publicReference.patterns)
+  ? publicReference.patterns
+  : [];
+const referenceSourceIds = new Set(referenceSources.map((source) => source.id));
 const mitmLine = linesInSection("MITM").find((line) => line.indexOf("hostname =") === 0) || "";
 const mitmHosts = hostsFromAppendLine(mitmLine);
 const countedMetadata = {
@@ -170,6 +186,57 @@ function addCheck(checks, name, weight, passed, detail) {
   checks.push({ name, weight, passed: !!passed, detail: detail || "" });
 }
 
+function hasKnownScriptPrefix(prefix) {
+  return scripts.some((line) => line.indexOf(prefix) === 0);
+}
+
+function referencePatternHasEvidence(pattern) {
+  if (!pattern || !pattern.id || !Array.isArray(pattern.source_ids) || pattern.source_ids.length === 0 || !pattern.local_evidence) return false;
+  if (!pattern.source_ids.every((sourceId) => referenceSourceIds.has(sourceId))) return false;
+
+  if (pattern.id === "counted-release-metadata") {
+    return ["version", "build", "http-request-script", "http-response-script", "url-rewrite", "domain", "domain-suffix", "url-regex", "force-http-engine-hosts", "mitm", "total"].every((key) => {
+      return headerLines.some((line) => line.indexOf("#!" + key + "=") === 0);
+    });
+  }
+
+  if (pattern.id === "scoped-http-engine-hosts") {
+    return /^force-http-engine-hosts\s*=\s*%APPEND%/.test(forceLine) &&
+      forceHosts.length === mitmHosts.length &&
+      forceHosts.every((host, index) => host === mitmHosts[index]) &&
+      !forceHosts.some((host) => host.indexOf("*") >= 0);
+  }
+
+  if (pattern.id === "script-body-metadata") {
+    return scripts.every((line) => /(?:^|,)timeout=\d+(?:,|$)/.test(line) && /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line)) &&
+      scripts.filter((line) => /type=http-response/.test(line)).every((line) => /(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line));
+  }
+
+  if (pattern.id === "narrow-app-specific-rules") {
+    return hasKnownScriptPrefix("Bilibili Splash Ads") && hasKnownScriptPrefix("Bilibili Feed Ads") && hasKnownScriptPrefix("Coolapk Feed Ads") && hasKnownScriptPrefix("Generic Startup Ads");
+  }
+
+  if (pattern.id === "low-false-positive-bypass") {
+    return rawRules.indexOf("DOMAIN-SUFFIX,10099.com.cn,DIRECT") >= 0 &&
+      genericRe &&
+      !genericRe.test("https://m.10099.com.cn/h5wap/promotion") &&
+      !genericRe.test("https://example.com/promotion/list") &&
+      !genericRe.test("https://example.com/commercial/list") &&
+      !genericRe.test("https://example.com/campaign/list");
+  }
+
+  if (pattern.id === "behavior-regression-fixtures") {
+    return fixtureCases.length >= 8 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file));
+  }
+
+  if (pattern.id === "remote-release-drift-check") {
+    return /sha256\(remoteModule\)\s*===\s*sha256\(moduleText\)/.test(releaseCheckText) &&
+      /remote script content matches local file/.test(releaseCheckText);
+  }
+
+  return false;
+}
+
 const checks = [];
 
 addCheck(checks, "module metadata", 8, ["#!name", "#!desc", "#!author", "#!homepage", "#!icon", "#!version", "#!build"].every((prefix) => headerLines.some((line) => line.startsWith(prefix))), "name/desc/author/homepage/icon/version/build");
@@ -187,6 +254,7 @@ addCheck(checks, "rule conflict hygiene", 12, duplicateRules.length === 0 && exa
 addCheck(checks, "low false-positive generic rule", 12, genericRe && !genericRe.test("https://m.10099.com.cn/h5wap/promotion") && genericRe.test("https://example.com/splash/list") && !genericRe.test("https://example.com/promotion/list") && !genericRe.test("https://example.com/commercial/list") && !genericRe.test("https://example.com/campaign/list"), "catch startup terms, avoid broad business terms");
 addCheck(checks, "no-fill script coverage", 14, sdkSamples.every((url) => sdkRegexes.some((re) => re.test(url))) && sdkSamples.every((url) => !rewriteRegexOnly.some((re) => re.test(url))) && noFillHosts.every((host) => mitmHosts.indexOf(host) >= 0), "covered by script, not preempted by rewrite, MITM hosts aligned");
 addCheck(checks, "behavior fixture coverage", 10, fixtureCases.length >= 8 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file)) && fixtureCases.every((item) => item.name && item.script && item.url && Array.isArray(item.assertions) && item.assertions.length > 0), "fixture schema, sample count, and all response scripts covered");
+addCheck(checks, "public reference pattern coverage", 10, referenceSources.length >= 3 && referencePatterns.length >= 7 && uniqueDuplicates(referencePatterns.map((pattern) => pattern.id)).length === 0 && referenceSources.every((source) => source.id && /^https:\/\/github\.com\//.test(source.url || "")) && referencePatterns.every(referencePatternHasEvidence), "public source manifest and local evidence");
 addCheck(checks, "10099 service hall bypass", 5, rawRules.indexOf("DOMAIN-SUFFIX,10099.com.cn,DIRECT") >= 0 && !mitmHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "direct and not MITM");
 
 const total = checks.reduce((sum, check) => sum + check.weight, 0);

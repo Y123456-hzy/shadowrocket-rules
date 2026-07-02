@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "blackmatrix7-allinone",
+      "name": "blackmatrix7 ios_rule_script AllInOne",
+      "url": "https://github.com/blackmatrix7/ios_rule_script/blob/master/rewrite/Shadowrocket/AllInOne/AllInOne.sgmodule",
+      "observed_patterns": [
+        "counted header metadata",
+        "%APPEND% force-http-engine-hosts",
+        "%APPEND% MITM host list"
+      ]
+    },
+    {
+      "id": "app2smile-modules",
+      "name": "app2smile app-specific modules",
+      "url": "https://github.com/app2smile/rules/tree/master/module",
+      "observed_patterns": [
+        "narrow app-specific script patterns",
+        "requires-body and max-size metadata",
+        "explicit MITM scope"
+      ]
+    },
+    {
+      "id": "johnshall-release",
+      "name": "Johnshall Shadowrocket release profile",
+      "url": "https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever",
+      "observed_patterns": [
+        "build timestamp",
+        "generated profile hygiene",
+        "separate profile modes"
+      ]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "counted-release-metadata",
+      "source_ids": ["blackmatrix7-allinone"],
+      "local_evidence": "module header exposes version, build, script, rewrite, rule, HTTP-engine host, MITM, and total counts"
+    },
+    {
+      "id": "scoped-http-engine-hosts",
+      "source_ids": ["blackmatrix7-allinone"],
+      "local_evidence": "force-http-engine-hosts uses %APPEND%, exact hosts, no wildcard, and matches the MITM host list"
+    },
+    {
+      "id": "script-body-metadata",
+      "source_ids": ["app2smile-modules", "blackmatrix7-allinone"],
+      "local_evidence": "response scripts declare requires-body, max-size, timeout, and raw script-path metadata"
+    },
+    {
+      "id": "narrow-app-specific-rules",
+      "source_ids": ["app2smile-modules"],
+      "local_evidence": "known Bilibili and Coolapk endpoints use app-specific script patterns before generic startup cleanup"
+    },
+    {
+      "id": "low-false-positive-bypass",
+      "source_ids": ["app2smile-modules"],
+      "local_evidence": "10099 service hall bypass and broad business-word exclusions are covered by rules and tests"
+    },
+    {
+      "id": "behavior-regression-fixtures",
+      "source_ids": ["johnshall-release"],
+      "local_evidence": "fixture cases cover Bilibili, Coolapk, generic startup cleanup, no-fill responses, and false-positive guards"
+    },
+    {
+      "id": "remote-release-drift-check",
+      "source_ids": ["johnshall-release"],
+      "local_evidence": "remote release check verifies raw module/script reachability plus SHA-256 content equality"
+    }
+  ]
+}
