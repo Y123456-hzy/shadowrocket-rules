@@ -61,6 +61,39 @@ function scriptPaths(moduleText) {
   return Array.from(new Set(matches.map((match) => match.replace(/^script-path=.*\/shadowrocket\//, ""))));
 }
 
+function linesInSection(moduleText, name) {
+  const match = moduleText.match(new RegExp("\\[" + name + "\\]\\n([\\s\\S]*?)(?=\\n\\[|$)"));
+  return match ? match[1].trim().split(/\n/).map((line) => line.trim()).filter(Boolean) : [];
+}
+
+function headerInt(moduleText, key) {
+  const match = moduleText.match(new RegExp("^#!" + key + "=(\\d+)$", "m"));
+  return match ? Number(match[1]) : null;
+}
+
+function countedMetadata(moduleText) {
+  const scripts = linesInSection(moduleText, "Script");
+  const rewrites = linesInSection(moduleText, "URL Rewrite");
+  const rules = linesInSection(moduleText, "Rule");
+  const mitmLine = linesInSection(moduleText, "MITM").find((line) => line.indexOf("hostname =") === 0) || "";
+  const mitmHosts = mitmLine
+    .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
+    .split(",")
+    .map((host) => host.trim())
+    .filter(Boolean);
+
+  return {
+    "http-request-script": scripts.filter((line) => /type=http-request/.test(line)).length,
+    "http-response-script": scripts.filter((line) => /type=http-response/.test(line)).length,
+    "url-rewrite": rewrites.length,
+    domain: rules.filter((line) => line.indexOf("DOMAIN,") === 0).length,
+    "domain-suffix": rules.filter((line) => line.indexOf("DOMAIN-SUFFIX,") === 0).length,
+    "url-regex": rules.filter((line) => line.indexOf("URL-REGEX,") === 0).length,
+    mitm: mitmHosts.length,
+    total: scripts.length + rewrites.length + rules.length + mitmHosts.length
+  };
+}
+
 function requestText(url) {
   const curl = childProcess.spawnSync("curl", ["-fsSL", "--max-time", "20", url], {
     cwd: root,
@@ -111,6 +144,10 @@ async function main() {
   assert("quality audit has no failed checks", audit.checks.every((check) => check.passed));
 
   assert("README module name matches sgmodule", readmeName(readmeText) === moduleName(moduleText));
+  const counts = countedMetadata(moduleText);
+  Object.keys(counts).forEach((key) => {
+    assert("module header count matches " + key, headerInt(moduleText, key) === counts[key]);
+  });
   scripts.forEach((file) => {
     assert("published script path has local file: " + file, fs.existsSync(path.join(root, file)));
   });
@@ -119,6 +156,11 @@ async function main() {
     const remoteModule = await requestText(rawModuleUrl);
     assert("remote module is reachable", remoteModule.length > 0);
     assert("remote module name matches local module", moduleName(remoteModule) === moduleName(moduleText));
+    const remoteCounts = countedMetadata(remoteModule);
+    Object.keys(remoteCounts).forEach((key) => {
+      assert("remote module header count matches " + key, headerInt(remoteModule, key) === remoteCounts[key]);
+      assert("remote module header count equals local " + key, headerInt(remoteModule, key) === headerInt(moduleText, key));
+    });
     for (const file of scripts) {
       const remoteScript = await requestText(rawScriptBase + file);
       assert("remote script is reachable: " + file, remoteScript.length > 0);

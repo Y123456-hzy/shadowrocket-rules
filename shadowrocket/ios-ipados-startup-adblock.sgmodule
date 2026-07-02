@@ -1,8 +1,18 @@
-#!name=GY Startup AdBlock v6.7 - Low-FP Audited
-#!desc=Build 2026-07-02 09:20 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, preserves ambiguous business campaign content unless it looks like ads, and ships with behavior fixtures plus a 90+ local quality audit.
+#!name=GY Startup AdBlock v6.8 - Counted Release
+#!desc=Build 2026-07-02 09:21 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, preserves ambiguous business campaign content unless it looks like ads, and ships with counted release metadata plus behavior fixtures.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!version=6.8
+#!build=2026-07-02 09:21 CST
+#!http-request-script=1
+#!http-response-script=5
+#!url-rewrite=7
+#!domain=28
+#!domain-suffix=15
+#!url-regex=1
+#!mitm=24
+#!total=81
 
 [Script]
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js

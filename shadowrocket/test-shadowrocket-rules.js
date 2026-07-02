@@ -44,6 +44,12 @@ function extractSection(name) {
   return match ? match[1].trim().split(/\n/).filter(Boolean) : [];
 }
 
+function headerInt(key) {
+  const text = fs.readFileSync(modulePath, "utf8");
+  const match = text.match(new RegExp("^#!" + key + "=(\\d+)$", "m"));
+  return match ? Number(match[1]) : null;
+}
+
 function patternFromScriptLine(line) {
   return new RegExp(line.match(/pattern=([^,]+)/)[1].replace(/\\\//g, "/"));
 }
@@ -168,6 +174,21 @@ function testModuleRules() {
     .filter(Boolean);
   const rewrites = extractSection("URL Rewrite").map(function (line) {
     return { line: line, re: regexFromRewriteLine(line) };
+  });
+
+  const countedMetadata = {
+    "http-request-script": scripts.filter(function (line) { return /type=http-request/.test(line); }).length,
+    "http-response-script": scripts.filter(function (line) { return /type=http-response/.test(line); }).length,
+    "url-rewrite": rewrites.length,
+    domain: rules.filter(function (rule) { return rule.type === "DOMAIN"; }).length,
+    "domain-suffix": rules.filter(function (rule) { return rule.type === "DOMAIN-SUFFIX"; }).length,
+    "url-regex": rules.filter(function (rule) { return rule.type === "URL-REGEX"; }).length,
+    mitm: mitmHosts.length,
+    total: scripts.length + rewrites.length + rawRules.length + mitmHosts.length
+  };
+
+  Object.keys(countedMetadata).forEach(function (key) {
+    assert("Header count matches " + key, headerInt(key) === countedMetadata[key]);
   });
 
   scripts.forEach(function (line) {

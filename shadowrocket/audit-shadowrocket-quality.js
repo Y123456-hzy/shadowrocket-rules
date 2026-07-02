@@ -24,6 +24,11 @@ function sectionText(name) {
   return linesInSection(name).join("\n");
 }
 
+function headerInt(key) {
+  const match = text.match(new RegExp("^#!" + key + "=(\\d+)$", "m"));
+  return match ? Number(match[1]) : null;
+}
+
 function scriptPattern(line) {
   const match = line.match(/pattern=([^,]+)/);
   return match ? match[1].replace(/\\\//g, "/") : "";
@@ -73,6 +78,16 @@ const mitmHosts = mitmLine
   .split(",")
   .map((host) => host.trim())
   .filter(Boolean);
+const countedMetadata = {
+  "http-request-script": scripts.filter((line) => /type=http-request/.test(line)).length,
+  "http-response-script": scripts.filter((line) => /type=http-response/.test(line)).length,
+  "url-rewrite": rewrites.length,
+  domain: rules.filter((rule) => rule.type === "DOMAIN").length,
+  "domain-suffix": rules.filter((rule) => rule.type === "DOMAIN-SUFFIX").length,
+  "url-regex": rules.filter((rule) => rule.type === "URL-REGEX").length,
+  mitm: mitmHosts.length,
+  total: scripts.length + rewrites.length + rawRules.length + mitmHosts.length
+};
 
 const sdkSamples = [
   "https://api-access.pangolin-sdk-toutiao.com/api/ad/union/sdk/get_ads/?x=1",
@@ -148,7 +163,8 @@ function addCheck(checks, name, weight, passed, detail) {
 
 const checks = [];
 
-addCheck(checks, "module metadata", 8, ["#!name", "#!desc", "#!author", "#!homepage", "#!icon"].every((prefix) => headerLines.some((line) => line.startsWith(prefix))), "name/desc/author/homepage/icon");
+addCheck(checks, "module metadata", 8, ["#!name", "#!desc", "#!author", "#!homepage", "#!icon", "#!version", "#!build"].every((prefix) => headerLines.some((line) => line.startsWith(prefix))), "name/desc/author/homepage/icon/version/build");
+addCheck(checks, "counted release metadata", 8, Object.keys(countedMetadata).every((key) => headerInt(key) === countedMetadata[key]), "script, rewrite, rule, MITM, and total counts");
 addCheck(checks, "required sections", 7, ["Script", "URL Rewrite", "Rule", "MITM"].every((name) => sectionText(name).length > 0), "[Script], [URL Rewrite], [Rule], [MITM]");
 addCheck(checks, "script metadata", 12, scripts.every((line) => /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line) && /(?:^|,)timeout=\d+(?:,|$)/.test(line) && (!/type=http-response/.test(line) || (/(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line)))), "raw script paths, timeouts, response body limits");
 addCheck(checks, "script paths resolve locally", 8, scripts.every((line) => {

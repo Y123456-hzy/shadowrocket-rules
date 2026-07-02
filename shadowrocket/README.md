@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.7 - Low-FP Audited
+GY Startup AdBlock v6.8 - Counted Release
 ```
 
 Subscription module:
@@ -42,7 +42,8 @@ Notes:
 - Inside matched startup responses, ambiguous business keys such as `promotion`, `commercial`, and `campaign` are no longer erased wholesale; the script only removes contents that look ad-like.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
-- The quality audit scores release readiness across metadata, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
+- The module header includes counted release metadata for script, rewrite, rule, and MITM totals, and release checks recompute those counts before publishing.
+- The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
 - Behavior fixtures live in `fixtures/behavior-cases.json`. Add real app logs there as small request/body/assertion samples before changing broad cleanup logic.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.
 - The generic rule only works for HTTPS JSON endpoints that Shadowrocket can MITM. Apps with certificate pinning, protobuf, or non-HTTP startup ads may need app-specific rules.
