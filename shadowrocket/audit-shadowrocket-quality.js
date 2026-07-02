@@ -220,11 +220,16 @@ function referencePatternHasEvidence(pattern) {
     return rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v1/IosStart/getStartInfo")) &&
       rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v5/activity/advertisement")) &&
       rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v5/activity/advertisementnonrealtime")) &&
+      rewriteRegexOnly.some((re) => re.test("https://newclient.map.baidu.com/client/phpui2/?qt=ads&cuid=1")) &&
       !rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v1/IosStart/getUserInfo")) &&
       !rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v1/IosStart/getStartInfo/extra")) &&
       !rewriteRegexOnly.some((re) => re.test("https://mime.baidu.com/v5/activity/advertisementList")) &&
+      !rewriteRegexOnly.some((re) => re.test("https://newclient.map.baidu.com/client/phpui2/?qt=address")) &&
+      !rewriteRegexOnly.some((re) => re.test("https://newclient.map.baidu.com/client/phpui2/extra?qt=ads")) &&
       forceHosts.indexOf("mime.baidu.com") >= 0 &&
-      mitmHosts.indexOf("mime.baidu.com") >= 0;
+      forceHosts.indexOf("newclient.map.baidu.com") >= 0 &&
+      mitmHosts.indexOf("mime.baidu.com") >= 0 &&
+      mitmHosts.indexOf("newclient.map.baidu.com") >= 0;
   }
 
   if (pattern.id === "low-false-positive-bypass") {

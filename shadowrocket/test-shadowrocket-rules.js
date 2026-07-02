@@ -297,7 +297,11 @@ function testModuleRules() {
   assert("Baidu activity rewrite catches exact activity ads", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisement?x=1"); }));
   assert("Baidu activity rewrite catches nonrealtime activity ads", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisementnonrealtime"); }));
   assert("Baidu activity rewrite avoids adjacent activity paths", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisementList"); }));
+  assert("Baidu Map qt ads rewrite catches exact ads query", rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/?qt=ads&cuid=1"); }));
+  assert("Baidu Map qt ads rewrite avoids adjacent query values", !rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/?qt=address"); }));
+  assert("Baidu Map qt ads rewrite avoids adjacent paths", !rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/extra?qt=ads"); }));
   assert("MITM includes Baidu exact startup host", mitmHosts.indexOf("mime.baidu.com") >= 0);
+  assert("MITM includes Baidu Map exact ads host", mitmHosts.indexOf("newclient.map.baidu.com") >= 0);
 
   [
     "api-access.pangolin-sdk-toutiao.com",

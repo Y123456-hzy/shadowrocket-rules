@@ -1,22 +1,22 @@
-#!name=GY Startup AdBlock v6.14 - Baidu Activity Exact
-#!desc=Build 2026-07-02 10:20 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds exact Baidu activity-ad rewrites.
+#!name=GY Startup AdBlock v6.15 - Baidu Map Ads Exact
+#!desc=Build 2026-07-02 10:27 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds an exact Baidu Map ads rewrite.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
-#!version=6.14
-#!build=2026-07-02 10:20 CST
+#!version=6.15
+#!build=2026-07-02 10:27 CST
 #!http-request-script=1
 #!http-response-script=6
-#!url-rewrite=9
+#!url-rewrite=10
 #!domain=28
 #!domain-suffix=15
 #!url-regex=1
-#!force-http-engine-hosts=25
-#!mitm=25
-#!total=110
+#!force-http-engine-hosts=26
+#!mitm=26
+#!total=113
 
 [General]
-force-http-engine-hosts = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mime.baidu.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
+force-http-engine-hosts = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mime.baidu.com, newclient.map.baidu.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
 
 [Script]
 Bilibili Splash Ads = type=http-response,pattern=^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/(?:list|show|event\/list2)(?:\?|$),requires-body=1,max-size=0,timeout=10,script-path=https://raw.githubusercontent.com/Y123456-hzy/shadowrocket-rules/main/shadowrocket/startup-ad-clean.js,script-update-interval=0
@@ -34,6 +34,7 @@ Xiaocan Ad SDK No Fill Fallback = type=http-response,pattern=^https?:\/\/(?:(?:a
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject-200
 ^https?:\/\/mime\.baidu\.com\/v\d\/IosStart\/getStartInfo$ - reject
 ^https?:\/\/mime\.baidu\.com\/v\d\/activity\/advertisement(?:nonrealtime)?(?:\?|$) - reject
+^https?:\/\/newclient\.map\.baidu\.com\/client\/phpui2\/\?qt=ads(?:&|$) - reject
 ^http:\/\/sdk\.1rtb\.net\/sdk\/req_ad - reject-dict
 ^http:\/\/idfa2\.shuzilm\.cn\/ - reject-200
 ^http:\/\/iuni\.telecome\.cn\/ - reject-200
@@ -85,4 +86,4 @@ DOMAIN-SUFFIX,fancydsp.com,REJECT-DICT
 DOMAIN,dig.bdurl.net,REJECT-DICT
 
 [MITM]
-hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mime.baidu.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
+hostname = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mime.baidu.com, newclient.map.baidu.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
