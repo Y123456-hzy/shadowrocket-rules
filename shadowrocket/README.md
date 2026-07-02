@@ -50,7 +50,7 @@ Notes:
 - Remote release checks compare SHA-256 content hashes for the raw module and each published script, and verify public reference-source links before calling a release good.
 - The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
 - Behavior fixtures live in `fixtures/behavior-cases.json`. Add real app logs there as small request/body/assertion samples before changing broad cleanup logic.
-- Public-rule reference patterns live in `references/public-patterns.json`; the audit checks that each borrowed quality pattern has current local evidence, and `--remote` checks that the source links are still reachable.
+- Public-rule reference patterns live in `references/public-patterns.json`; the audit checks that each borrowed quality pattern has current local evidence, and `--remote` checks that source links still contain expected reference snippets.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.
 - The generic rule only works for HTTPS JSON endpoints that Shadowrocket can MITM. Apps with certificate pinning, protobuf, or non-HTTP startup ads may need app-specific rules.
 - Keep this repository public so Shadowrocket can fetch the raw module and script URLs without authentication.

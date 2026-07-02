@@ -72,6 +72,14 @@ function referenceSources() {
   return manifest && Array.isArray(manifest.sources) ? manifest.sources : [];
 }
 
+function referenceCheckUrl(source) {
+  return source.check_url || source.url;
+}
+
+function referenceRequiredSnippets(source) {
+  return Array.isArray(source.must_contain) ? source.must_contain : [];
+}
+
 function linesInSection(moduleText, name) {
   const match = moduleText.match(new RegExp("\\[" + name + "\\]\\n([\\s\\S]*?)(?=\\n\\[|$)"));
   return match ? match[1].trim().split(/\n/).map((line) => line.trim()).filter(Boolean) : [];
@@ -113,11 +121,16 @@ function countedMetadata(moduleText) {
   };
 }
 
+function shortOutput(text) {
+  return String(text || "").trim().slice(0, 500);
+}
+
 function requestText(url) {
   const curl = childProcess.spawnSync("curl", ["-fsSL", "--max-time", "20", url], {
     cwd: root,
     encoding: "utf8",
-    stdio: "pipe"
+    stdio: "pipe",
+    maxBuffer: 50 * 1024 * 1024
   });
   if (curl.status === 0) return Promise.resolve(curl.stdout);
 
@@ -138,7 +151,7 @@ function requestText(url) {
     });
     request.on("error", reject);
   }).catch((error) => {
-    const curlError = (curl.stderr || curl.stdout || "").trim();
+    const curlError = shortOutput(curl.stderr || curl.stdout);
     const nodeError = error && (error.message || error.code || error.name) ? (error.message || error.code || error.name) : String(error);
     throw new Error(url + " unavailable; curl: " + (curlError || "exit " + curl.status) + "; node: " + nodeError);
   });
@@ -188,8 +201,11 @@ async function main() {
       assert("remote script content matches local file: " + file, sha256(remoteScript) === sha256(read(path.join(root, file))));
     }
     for (const source of references) {
-      const remoteSource = await requestText(source.url);
+      const remoteSource = await requestText(referenceCheckUrl(source));
       assert("reference source is reachable: " + source.id, remoteSource.length > 0);
+      referenceRequiredSnippets(source).forEach((snippet) => {
+        assert("reference source contains " + source.id + ": " + snippet, remoteSource.indexOf(snippet) >= 0);
+      });
     }
   }
 

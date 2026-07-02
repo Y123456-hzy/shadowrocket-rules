@@ -5,6 +5,12 @@
       "id": "blackmatrix7-allinone",
       "name": "blackmatrix7 ios_rule_script AllInOne",
       "url": "https://github.com/blackmatrix7/ios_rule_script/blob/master/rewrite/Shadowrocket/AllInOne/AllInOne.sgmodule",
+      "check_url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rewrite/Shadowrocket/AllInOne/AllInOne.sgmodule",
+      "must_contain": [
+        "#!total=",
+        "force-http-engine-hosts = %APPEND%",
+        "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo"
+      ],
       "observed_patterns": [
         "counted header metadata",
         "%APPEND% force-http-engine-hosts",
@@ -16,6 +22,12 @@
       "id": "bai1zi-shadowrocket",
       "name": "bai1zi Shadowrocket Surge Loon QX rules",
       "url": "https://github.com/bai1zi/shadowrocket-surge-loon-qx/blob/main/ADs.sgmodule",
+      "check_url": "https://raw.githubusercontent.com/bai1zi/shadowrocket-surge-loon-qx/main/ADs.sgmodule",
+      "must_contain": [
+        "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo",
+        "hostname = %APPEND%",
+        "api.coolapk.com"
+      ],
       "observed_patterns": [
         "exact startup-ad URL rewrites",
         "explicit MITM scope"
@@ -25,6 +37,12 @@
       "id": "app2smile-modules",
       "name": "app2smile app-specific modules",
       "url": "https://github.com/app2smile/rules/tree/master/module",
+      "check_url": "https://raw.githubusercontent.com/app2smile/rules/master/module/bilibili.sgmodule",
+      "must_contain": [
+        "bili-json = type=http-response",
+        "script-update-interval=0",
+        "grpc.biliapi.net"
+      ],
       "observed_patterns": [
         "narrow app-specific script patterns",
         "requires-body and max-size metadata",
@@ -35,6 +53,12 @@
       "id": "johnshall-release",
       "name": "Johnshall Shadowrocket release profile",
       "url": "https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever",
+      "check_url": "https://raw.githubusercontent.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever/release/sr_top500_banlist_ad.conf",
+      "must_contain": [
+        "Best Shadowrocket Rules",
+        "build time:",
+        "[Rule]"
+      ],
       "observed_patterns": [
         "build timestamp",
         "generated profile hygiene",
