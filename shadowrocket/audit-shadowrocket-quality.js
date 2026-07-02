@@ -208,7 +208,7 @@ function referencePatternHasEvidence(pattern) {
   }
 
   if (pattern.id === "script-body-metadata") {
-    return scripts.every((line) => /(?:^|,)timeout=\d+(?:,|$)/.test(line) && /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line)) &&
+    return scripts.every((line) => /(?:^|,)timeout=\d+(?:,|$)/.test(line) && /(?:^|,)script-update-interval=0(?:,|$)/.test(line) && /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line)) &&
       scripts.filter((line) => /type=http-response/.test(line)).every((line) => /(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line));
   }
 
@@ -242,7 +242,7 @@ const checks = [];
 addCheck(checks, "module metadata", 8, ["#!name", "#!desc", "#!author", "#!homepage", "#!icon", "#!version", "#!build"].every((prefix) => headerLines.some((line) => line.startsWith(prefix))), "name/desc/author/homepage/icon/version/build");
 addCheck(checks, "counted release metadata", 8, Object.keys(countedMetadata).every((key) => headerInt(key) === countedMetadata[key]), "script, rewrite, rule, MITM, and total counts");
 addCheck(checks, "required sections", 7, ["General", "Script", "URL Rewrite", "Rule", "MITM"].every((name) => sectionText(name).length > 0), "[General], [Script], [URL Rewrite], [Rule], [MITM]");
-addCheck(checks, "script metadata", 12, scripts.every((line) => /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line) && /(?:^|,)timeout=\d+(?:,|$)/.test(line) && (!/type=http-response/.test(line) || (/(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line)))), "raw script paths, timeouts, response body limits");
+addCheck(checks, "script metadata", 12, scripts.every((line) => /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line) && /(?:^|,)timeout=\d+(?:,|$)/.test(line) && /(?:^|,)script-update-interval=0(?:,|$)/.test(line) && (!/type=http-response/.test(line) || (/(?:^|,)requires-body=1(?:,|$)/.test(line) && /(?:^|,)max-size=\d+(?:,|$)/.test(line)))), "raw script paths, timeouts, update interval, response body limits");
 addCheck(checks, "script paths resolve locally", 8, scripts.every((line) => {
   const match = line.match(/script-path=https:\/\/raw\.githubusercontent\.com\/Y123456-hzy\/shadowrocket-rules\/main\/shadowrocket\/([^,]+)/);
   return !match || fs.existsSync(path.join(root, match[1]));

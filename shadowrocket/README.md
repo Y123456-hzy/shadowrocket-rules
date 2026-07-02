@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.9 - HTTP Engine Scoped
+GY Startup AdBlock v6.10 - Script Update Pinned
 ```
 
 Subscription module:
@@ -42,6 +42,7 @@ Notes:
 - Inside matched startup responses, ambiguous business keys such as `promotion`, `commercial`, and `campaign` are no longer erased wholesale; the script only removes contents that look ad-like.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
+- Script entries explicitly set `script-update-interval=0`, mirroring app-specific public modules that pin script update behavior in the module itself.
 - The module header includes counted release metadata for script, rewrite, rule, HTTP-engine host, and MITM totals, and release checks recompute those counts before publishing.
 - Remote release checks compare SHA-256 content hashes for the raw module and each published script, so GitHub cache or sync drift is caught before calling a release good.
 - The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.

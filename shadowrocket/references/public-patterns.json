@@ -46,7 +46,7 @@
     {
       "id": "script-body-metadata",
       "source_ids": ["app2smile-modules", "blackmatrix7-allinone"],
-      "local_evidence": "response scripts declare requires-body, max-size, timeout, and raw script-path metadata"
+      "local_evidence": "response scripts declare requires-body, max-size, timeout, raw script-path, and script-update-interval metadata"
     },
     {
       "id": "narrow-app-specific-rules",

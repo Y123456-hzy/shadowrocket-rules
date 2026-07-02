@@ -213,6 +213,7 @@ function testModuleRules() {
     assert("Script pattern compiles: " + line.split(" = ")[0], compileScriptPattern(line) instanceof RegExp);
     assert("Script has a timeout: " + line.split(" = ")[0], /(?:^|,)timeout=\d+(?:,|$)/.test(line));
     assert("Script has a raw script path: " + line.split(" = ")[0], /script-path=https:\/\/raw\.githubusercontent\.com\//.test(line));
+    assert("Script pins update interval: " + line.split(" = ")[0], /(?:^|,)script-update-interval=0(?:,|$)/.test(line));
     if (/type=http-response/.test(line)) {
       assert("Response script declares body requirement: " + line.split(" = ")[0], /(?:^|,)requires-body=1(?:,|$)/.test(line));
       assert("Response script declares max-size: " + line.split(" = ")[0], /(?:^|,)max-size=\d+(?:,|$)/.test(line));
