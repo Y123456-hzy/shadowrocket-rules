@@ -43,6 +43,7 @@ Notes:
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
 - The module header includes counted release metadata for script, rewrite, rule, HTTP-engine host, and MITM totals, and release checks recompute those counts before publishing.
+- Remote release checks compare SHA-256 content hashes for the raw module and each published script, so GitHub cache or sync drift is caught before calling a release good.
 - The quality audit scores release readiness across metadata, counted header accuracy, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.
 - Behavior fixtures live in `fixtures/behavior-cases.json`. Add real app logs there as small request/body/assertion samples before changing broad cleanup logic.
 - Some ad SDK endpoints are still handled with lightweight fast 200 or reject-dict rules.

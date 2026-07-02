@@ -6,6 +6,7 @@
  */
 
 const childProcess = require("child_process");
+const crypto = require("crypto");
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
@@ -44,6 +45,10 @@ function assert(message, condition) {
 
 function read(file) {
   return fs.readFileSync(file, "utf8");
+}
+
+function sha256(text) {
+  return crypto.createHash("sha256").update(text, "utf8").digest("hex");
 }
 
 function moduleName(text) {
@@ -164,6 +169,7 @@ async function main() {
     const remoteModule = await requestText(rawModuleUrl);
     assert("remote module is reachable", remoteModule.length > 0);
     assert("remote module name matches local module", moduleName(remoteModule) === moduleName(moduleText));
+    assert("remote module content matches local module", sha256(remoteModule) === sha256(moduleText));
     const remoteCounts = countedMetadata(remoteModule);
     Object.keys(remoteCounts).forEach((key) => {
       assert("remote module header count matches " + key, headerInt(remoteModule, key) === remoteCounts[key]);
@@ -172,6 +178,7 @@ async function main() {
     for (const file of scripts) {
       const remoteScript = await requestText(rawScriptBase + file);
       assert("remote script is reachable: " + file, remoteScript.length > 0);
+      assert("remote script content matches local file: " + file, sha256(remoteScript) === sha256(read(path.join(root, file))));
     }
   }
 
