@@ -9,7 +9,8 @@
       "must_contain": [
         "#!total=",
         "force-http-engine-hosts = %APPEND%",
-        "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo"
+        "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo",
+        "mime\\.baidu\\.com\\/v\\d\\/activity\\/advertisement"
       ],
       "observed_patterns": [
         "counted header metadata",
@@ -25,6 +26,7 @@
       "check_url": "https://raw.githubusercontent.com/bai1zi/shadowrocket-surge-loon-qx/main/ADs.sgmodule",
       "must_contain": [
         "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo",
+        "mime\\.baidu\\.com\\/v\\d\\/activity\\/advertisement",
         "hostname = %APPEND%",
         "api.coolapk.com"
       ],
@@ -90,7 +92,7 @@
     {
       "id": "exact-startup-url-rewrite",
       "source_ids": ["blackmatrix7-allinone", "bai1zi-shadowrocket"],
-      "local_evidence": "mime.baidu.com/v*/IosStart/getStartInfo is a single exact URL Rewrite with exact HTTP-engine and MITM host scope"
+      "local_evidence": "mime.baidu.com iOS startup and activity ad paths use exact URL Rewrites with exact HTTP-engine and MITM host scope"
     },
     {
       "id": "low-false-positive-bypass",

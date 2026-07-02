@@ -294,6 +294,9 @@ function testModuleRules() {
   assert("Baidu iOS startup rewrite catches exact start info", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getStartInfo"); }));
   assert("Baidu iOS startup rewrite avoids adjacent paths", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getUserInfo"); }));
   assert("Baidu iOS startup rewrite is scoped to the exact path", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getStartInfo/extra"); }));
+  assert("Baidu activity rewrite catches exact activity ads", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisement?x=1"); }));
+  assert("Baidu activity rewrite catches nonrealtime activity ads", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisementnonrealtime"); }));
+  assert("Baidu activity rewrite avoids adjacent activity paths", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v5/activity/advertisementList"); }));
   assert("MITM includes Baidu exact startup host", mitmHosts.indexOf("mime.baidu.com") >= 0);
 
   [

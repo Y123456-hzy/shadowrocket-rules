@@ -1,19 +1,19 @@
-#!name=GY Startup AdBlock v6.13 - Baidu Startup Exact
-#!desc=Build 2026-07-02 10:04 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds an exact Baidu iOS startup-ad rewrite.
+#!name=GY Startup AdBlock v6.14 - Baidu Activity Exact
+#!desc=Build 2026-07-02 10:20 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds exact Baidu activity-ad rewrites.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
-#!version=6.13
-#!build=2026-07-02 10:04 CST
+#!version=6.14
+#!build=2026-07-02 10:20 CST
 #!http-request-script=1
 #!http-response-script=6
-#!url-rewrite=8
+#!url-rewrite=9
 #!domain=28
 #!domain-suffix=15
 #!url-regex=1
 #!force-http-engine-hosts=25
 #!mitm=25
-#!total=109
+#!total=110
 
 [General]
 force-http-engine-hosts = %APPEND% app.bilibili.com, api.bilibili.com, api.biliapi.net, api.live.bilibili.com, api.vc.bilibili.com, cm.bilibili.com, api.coolapk.com, api-access.pangolin-sdk-toutiao.com, api-access.pangolin-sdk-toutiao1.com, api-access.pangolin-sdk-toutiao-b.com, is.snssdk.com, gromore.pangolin-sdk-toutiao.com, sf3-fe-tos.pglstatp-toutiao.com, sf6-fe-tos.pglstatp-toutiao.com, mime.baidu.com, mi.gdt.qq.com, win.gdt.qq.com, oth.eve.mdt.qq.com, oth.str.mdt.qq.com, open.e.kuaishou.com, api-htp.beizi.biz, t2.fancyapi.com, g.fancyapi.com, sdk.zhangyuyidong.cn, sdktmp.hubcloud.com.cn
@@ -33,6 +33,7 @@ Xiaocan Ad SDK No Fill Fallback = type=http-response,pattern=^https?:\/\/(?:(?:a
 ^https?:\/\/cm\.bilibili\.com\/ - reject
 ^https?:\/\/[^\/]*pglstatp-toutiao\.com\/ - reject-200
 ^https?:\/\/mime\.baidu\.com\/v\d\/IosStart\/getStartInfo$ - reject
+^https?:\/\/mime\.baidu\.com\/v\d\/activity\/advertisement(?:nonrealtime)?(?:\?|$) - reject
 ^http:\/\/sdk\.1rtb\.net\/sdk\/req_ad - reject-dict
 ^http:\/\/idfa2\.shuzilm\.cn\/ - reject-200
 ^http:\/\/iuni\.telecome\.cn\/ - reject-200
