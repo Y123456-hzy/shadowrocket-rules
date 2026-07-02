@@ -300,8 +300,12 @@ function testModuleRules() {
   assert("Baidu Map qt ads rewrite catches exact ads query", rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/?qt=ads&cuid=1"); }));
   assert("Baidu Map qt ads rewrite avoids adjacent query values", !rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/?qt=address"); }));
   assert("Baidu Map qt ads rewrite avoids adjacent paths", !rewrites.some(function (item) { return item.re.test("https://newclient.map.baidu.com/client/phpui2/extra?qt=ads"); }));
+  assert("Baidu newspage getmobads rewrite catches landingshare ads", rewrites.some(function (item) { return item.re.test("https://mbd.baidu.com/newspage/api/getmobads?page=landingshare&x=1"); }));
+  assert("Baidu newspage getmobads rewrite avoids adjacent pages", !rewrites.some(function (item) { return item.re.test("https://mbd.baidu.com/newspage/api/getmobads?page=normal"); }));
+  assert("Baidu newspage getmobads rewrite avoids adjacent paths", !rewrites.some(function (item) { return item.re.test("https://mbd.baidu.com/newspage/api/getmobads2?page=landingshare"); }));
   assert("MITM includes Baidu exact startup host", mitmHosts.indexOf("mime.baidu.com") >= 0);
   assert("MITM includes Baidu Map exact ads host", mitmHosts.indexOf("newclient.map.baidu.com") >= 0);
+  assert("MITM includes Baidu newspage exact ads host", mitmHosts.indexOf("mbd.baidu.com") >= 0);
 
   [
     "api-access.pangolin-sdk-toutiao.com",

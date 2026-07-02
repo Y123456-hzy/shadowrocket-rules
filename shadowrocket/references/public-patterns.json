@@ -11,7 +11,8 @@
         "force-http-engine-hosts = %APPEND%",
         "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo",
         "mime\\.baidu\\.com\\/v\\d\\/activity\\/advertisement",
-        "newclient\\.map\\.baidu\\.com\\/client\\/phpui2\\/\\?qt=ads"
+        "newclient\\.map\\.baidu\\.com\\/client\\/phpui2\\/\\?qt=ads",
+        "mbd\\.baidu\\.com\\/newspage\\/api\\/getmobads\\?page\\=landingshare"
       ],
       "observed_patterns": [
         "counted header metadata",
@@ -29,6 +30,7 @@
         "mime\\.baidu\\.com\\/v\\d\\/IosStart\\/getStartInfo",
         "mime\\.baidu\\.com\\/v\\d\\/activity\\/advertisement",
         "newclient\\.map\\.baidu\\.com\\/client\\/phpui2\\/\\?qt=ads",
+        "mbd\\.baidu\\.com\\/newspage\\/api\\/getmobads\\?page\\=landingshare",
         "hostname = %APPEND%",
         "api.coolapk.com"
       ],
@@ -94,7 +96,7 @@
     {
       "id": "exact-startup-url-rewrite",
       "source_ids": ["blackmatrix7-allinone", "bai1zi-shadowrocket"],
-      "local_evidence": "Baidu iOS startup, activity, and map qt=ads paths use exact URL Rewrites with exact HTTP-engine and MITM host scope"
+      "local_evidence": "Baidu iOS startup, activity, map qt=ads, and newspage getmobads paths use exact URL Rewrites with exact HTTP-engine and MITM host scope"
     },
     {
       "id": "low-false-positive-bypass",

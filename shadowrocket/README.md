@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.15 - Baidu Map Ads Exact
+GY Startup AdBlock v6.16 - Baidu GetMobads Exact
 ```
 
 Subscription module:
@@ -40,6 +40,7 @@ Notes:
 - Coolapk ad cleanup is kept in v6, but the script is narrowed to feed/list endpoints and skips the startup `main/init` API to reduce content-loading overhead.
 - Baidu iOS startup and activity advertising are handled with exact `mime.baidu.com` rewrites instead of broad Baidu-domain blocks.
 - Baidu Map `qt=ads` is handled with an exact `newclient.map.baidu.com/client/phpui2/` rewrite.
+- Baidu newspage `getmobads?page=landingshare` is handled with an exact `mbd.baidu.com` rewrite.
 - Ad SDK endpoints covered by `ad-sdk-no-fill.js` are left to the script instead of duplicated URL Rewrite rejects, so apps receive retry-friendly JSON no-fill responses.
 - HTTPS hosts handled by scripts or rewrites are explicitly listed in `%APPEND%` `force-http-engine-hosts` and `%APPEND%` MITM, and exact-domain direct/reject conflicts are checked locally.
 - Generic startup cleanup is intentionally limited to high-signal startup/ad URL terms and avoids broad business words such as `promotion` or `commercial`.
