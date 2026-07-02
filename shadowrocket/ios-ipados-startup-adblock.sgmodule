@@ -1,10 +1,10 @@
-#!name=GY Startup AdBlock v6.11 - Bilibili Tab Scoped
-#!desc=Build 2026-07-02 09:46 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and adds narrow Bilibili tab-entry cleanup.
+#!name=GY Startup AdBlock v6.12 - Bilibili Feed Cards
+#!desc=Build 2026-07-02 09:55 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, scopes HTTP engine hosts, and narrows Bilibili feed banner/game card cleanup.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
-#!version=6.11
-#!build=2026-07-02 09:46 CST
+#!version=6.12
+#!build=2026-07-02 09:55 CST
 #!http-request-script=1
 #!http-response-script=6
 #!url-rewrite=7

@@ -36,6 +36,27 @@
       ]
     },
     {
+      "name": "Bilibili feed banner and game cards are narrowed",
+      "script": "startup-ad-clean.js",
+      "url": "https://app.bilibili.com/x/v2/feed/index",
+      "body": {
+        "data": {
+          "items": [
+            { "id": 1, "card_type": "small_cover_v10", "card_goto": "av", "title": "normal video" },
+            { "id": 2, "card_type": "banner_v8", "card_goto": "banner", "banner_item": [{ "type": "ad" }] },
+            { "id": 3, "card_type": "small_cover_v10", "card_goto": "game", "title": "game promotion" },
+            { "id": 4, "card_type": "banner_v8", "card_goto": "banner", "banner_item": [{ "type": "archive" }] }
+          ]
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.items.length", "equals": 2 },
+        { "path": "bodyJson.data.items.0.id", "equals": 1 },
+        { "path": "bodyJson.data.items.1.id", "equals": 4 },
+        { "path": "bodyJson.data.items.1.banner_item.0.type", "equals": "archive" }
+      ]
+    },
+    {
       "name": "Bilibili tab entries are narrowed",
       "script": "startup-ad-clean.js",
       "url": "https://app.bilibili.com/x/resource/show/tab/v2",

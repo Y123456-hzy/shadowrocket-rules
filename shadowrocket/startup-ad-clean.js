@@ -82,13 +82,9 @@ function cleanBilibiliSplash(root) {
 
 function cleanBilibiliFeed(root) {
   if (root && root.data && Array.isArray(root.data.items)) {
-    root.data.items = root.data.items
-      .filter(function (item) {
-        return !looksLikeAd(item);
-      })
-      .map(function (item) {
-        return cleanGenericAdJson(item, 0);
-      });
+    root.data.items = root.data.items.filter(function (item) {
+      return !looksLikeBilibiliFeedAd(item);
+    });
   }
 
   return root;
@@ -181,10 +177,32 @@ function neutralValue(value, key) {
   return "";
 }
 
+function looksLikeBilibiliFeedAd(item) {
+  if (!item || typeof item !== "object") return false;
+
+  if (item.card_type === "banner_v8" && item.card_goto === "banner") {
+    return isBilibiliBannerAd(item);
+  }
+
+  if (item.card_type === "small_cover_v10" && item.card_goto === "game") return true;
+
+  return looksLikeAd(item);
+}
+
+function isBilibiliBannerAd(item) {
+  if (!item || item.card_type !== "banner_v8" || item.card_goto !== "banner" || !Array.isArray(item.banner_item)) return false;
+
+  return item.banner_item.some(function (banner) {
+    return banner && String(banner.type || "").toLowerCase() === "ad";
+  });
+}
+
 function looksLikeAd(item) {
   if (!item || typeof item !== "object") return false;
 
   if (item.is_ad === 1 || item.is_ad === true || item.ad === 1 || item.ad === true || item.cm_mark === 1) return true;
+  if (isBilibiliBannerAd(item)) return true;
+  if (item.card_type === "small_cover_v10" && item.card_goto === "game") return true;
   if (item.card_type === "cm_v2" || item.card_type === "cm_double_v9") return true;
   if (/^(?:ad|ads|advert|splash|launch|promotion|commercial|banner)$/i.test(String(item.type || item.goto || item.card_goto || ""))) return true;
   if (/^ad_/i.test(String(item.card_goto || ""))) return true;
