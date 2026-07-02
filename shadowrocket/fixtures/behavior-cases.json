@@ -53,6 +53,48 @@
       ]
     },
     {
+      "name": "Generic startup cleanup preserves normal campaign content",
+      "script": "startup-ad-clean.js",
+      "url": "https://example.com/launch/config",
+      "body": {
+        "data": {
+          "campaign": {
+            "name": "summer",
+            "items": [
+              { "id": 1, "title": "normal activity" },
+              { "id": 2, "is_ad": true, "title": "ad activity" }
+            ]
+          },
+          "commercial": {
+            "name": "member benefits"
+          }
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.campaign.name", "equals": "summer" },
+        { "path": "bodyJson.data.campaign.items.length", "equals": 1 },
+        { "path": "bodyJson.data.campaign.items.0.id", "equals": 1 },
+        { "path": "bodyJson.data.commercial.name", "equals": "member benefits" }
+      ]
+    },
+    {
+      "name": "Generic startup cleanup removes explicit promotion ad object",
+      "script": "startup-ad-clean.js",
+      "url": "https://example.com/startup/config",
+      "body": {
+        "data": {
+          "promotion": {
+            "type": "ad",
+            "creative_id": "abc",
+            "image": "https://example.com/ad.png"
+          }
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.promotion", "equals": {} }
+      ]
+    },
+    {
       "name": "Coolapk feed ads are filtered",
       "script": "coolapk-clean.js",
       "url": "https://api.coolapk.com/v6/dataList",

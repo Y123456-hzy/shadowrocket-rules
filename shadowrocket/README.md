@@ -3,7 +3,7 @@
 Current module name:
 
 ```text
-GY Startup AdBlock v6.6 - Audited Quality
+GY Startup AdBlock v6.7 - Low-FP Audited
 ```
 
 Subscription module:
@@ -39,6 +39,7 @@ Notes:
 - Ad SDK endpoints covered by `ad-sdk-no-fill.js` are left to the script instead of duplicated URL Rewrite rejects, so apps receive retry-friendly JSON no-fill responses.
 - HTTPS hosts handled by no-fill scripts are explicitly listed in `%APPEND%` MITM, and exact-domain direct/reject conflicts are checked locally.
 - Generic startup cleanup is intentionally limited to high-signal startup/ad URL terms and avoids broad business words such as `promotion` or `commercial`.
+- Inside matched startup responses, ambiguous business keys such as `promotion`, `commercial`, and `campaign` are no longer erased wholesale; the script only removes contents that look ad-like.
 - China Broadnet service hall domains under `10099.com.cn` are explicitly kept direct and excluded from the generic startup-ad cleanup rule.
 - Local checks compile script/rewrite regexes, verify script metadata, prevent duplicate rules, require `%APPEND%` MITM, and block exact or suffix direct/reject conflicts.
 - The quality audit scores release readiness across metadata, regex validity, script-path integrity, MITM hygiene, rule conflicts, low-false-positive generic matching, no-fill coverage, behavior fixtures, and the `10099.com.cn` bypass.

@@ -1,5 +1,5 @@
-#!name=GY Startup AdBlock v6.6 - Audited Quality
-#!desc=Build 2026-07-02 02:10 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup and ships with a 90+ local quality audit for metadata, regexes, MITM hygiene, rule conflicts, and no-fill coverage.
+#!name=GY Startup AdBlock v6.7 - Low-FP Audited
+#!desc=Build 2026-07-02 09:20 CST. iOS/iPadOS Shadowrocket module keeps low-false-positive startup cleanup, preserves ambiguous business campaign content unless it looks like ads, and ships with behavior fixtures plus a 90+ local quality audit.
 #!author=Codex
 #!homepage=https://github.com/Y123456-hzy/shadowrocket-rules
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png

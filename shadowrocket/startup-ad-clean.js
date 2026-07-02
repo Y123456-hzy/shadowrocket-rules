@@ -112,6 +112,11 @@ function cleanGenericAdJson(value, depth) {
       return;
     }
 
+    if (isAmbiguousBusinessKey(lower)) {
+      value[key] = looksLikeAd(value[key]) ? neutralValue(value[key], lower) : cleanGenericAdJson(value[key], depth + 1);
+      return;
+    }
+
     if (isAdTimeKey(lower)) {
       value[key] = lower.indexOf("interval") >= 0 ? 31536000 : 0;
       return;
@@ -124,8 +129,12 @@ function cleanGenericAdJson(value, depth) {
 }
 
 function isAdContainerKey(key) {
-  return /(?:^|_)(?:ad|ads|advert|advertise|advertisement|splash|launch|startup|open_screen|openscreen|promotion|commercial|campaign|material)(?:_|$)/i.test(key) ||
+  return /(?:^|_)(?:ad|ads|advert|advertise|advertisement|splash|launch|startup|open_screen|openscreen|material)(?:_|$)/i.test(key) ||
     /banner_ad|ad_info|adver|cm_mark/i.test(key);
+}
+
+function isAmbiguousBusinessKey(key) {
+  return /^(?:promotion|promotions|commercial|commercials|campaign|campaigns)$/i.test(key);
 }
 
 function isAdTimeKey(key) {
