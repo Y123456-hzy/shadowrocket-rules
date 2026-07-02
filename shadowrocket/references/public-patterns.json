@@ -8,7 +8,17 @@
       "observed_patterns": [
         "counted header metadata",
         "%APPEND% force-http-engine-hosts",
-        "%APPEND% MITM host list"
+        "%APPEND% MITM host list",
+        "exact startup-ad URL rewrites"
+      ]
+    },
+    {
+      "id": "bai1zi-shadowrocket",
+      "name": "bai1zi Shadowrocket Surge Loon QX rules",
+      "url": "https://github.com/bai1zi/shadowrocket-surge-loon-qx/blob/main/ADs.sgmodule",
+      "observed_patterns": [
+        "exact startup-ad URL rewrites",
+        "explicit MITM scope"
       ]
     },
     {
@@ -52,6 +62,11 @@
       "id": "narrow-app-specific-rules",
       "source_ids": ["app2smile-modules"],
       "local_evidence": "known Bilibili splash/feed/tab, nested Bilibili banner/game feed cards, and Coolapk endpoints use app-specific script patterns before generic startup cleanup"
+    },
+    {
+      "id": "exact-startup-url-rewrite",
+      "source_ids": ["blackmatrix7-allinone", "bai1zi-shadowrocket"],
+      "local_evidence": "mime.baidu.com/v*/IosStart/getStartInfo is a single exact URL Rewrite with exact HTTP-engine and MITM host scope"
     },
     {
       "id": "low-false-positive-bypass",

@@ -291,6 +291,11 @@ function testModuleRules() {
     assert("SDK sample is not preempted by URL Rewrite: " + url, !rewrites.some(function (item) { return item.re.test(url); }));
   });
 
+  assert("Baidu iOS startup rewrite catches exact start info", rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getStartInfo"); }));
+  assert("Baidu iOS startup rewrite avoids adjacent paths", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getUserInfo"); }));
+  assert("Baidu iOS startup rewrite is scoped to the exact path", !rewrites.some(function (item) { return item.re.test("https://mime.baidu.com/v1/IosStart/getStartInfo/extra"); }));
+  assert("MITM includes Baidu exact startup host", mitmHosts.indexOf("mime.baidu.com") >= 0);
+
   [
     "api-access.pangolin-sdk-toutiao.com",
     "api-access.pangolin-sdk-toutiao1.com",
