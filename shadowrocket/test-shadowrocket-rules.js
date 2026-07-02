@@ -10,6 +10,7 @@ const vm = require("vm");
 
 const root = __dirname;
 const modulePath = path.join(root, "ios-ipados-startup-adblock.sgmodule");
+const fixturePath = path.join(root, "fixtures", "behavior-cases.json");
 const quiet = process.argv.indexOf("--quiet") >= 0;
 let assertions = 0;
 
@@ -64,6 +65,51 @@ function parseRuleLine(line) {
     value: parts[1],
     policy: parts[2]
   };
+}
+
+function valueAtPath(value, lookupPath) {
+  return lookupPath.split(".").reduce(function (current, part) {
+    if (current === undefined || current === null) return undefined;
+    return current[part];
+  }, value);
+}
+
+function equalJson(actual, expected) {
+  return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+function parseJson(value) {
+  if (!value) return undefined;
+  return JSON.parse(value);
+}
+
+function testBehaviorFixtures() {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+  assert("Behavior fixture schema is supported", fixture.schema_version === 1 && Array.isArray(fixture.cases));
+
+  fixture.cases.forEach(function (item) {
+    const output = runScript(item.script, {
+      url: item.url,
+      hasResponse: item.hasResponse,
+      body: item.body === undefined ? item.bodyText || "" : JSON.stringify(item.body)
+    });
+    const context = {
+      result: output,
+      bodyJson: parseJson(output.body),
+      responseBodyJson: output.response ? parseJson(output.response.body) : undefined
+    };
+
+    item.assertions.forEach(function (expectation) {
+      const actual = valueAtPath(context, expectation.path);
+      if (Object.prototype.hasOwnProperty.call(expectation, "equals")) {
+        assert("Fixture " + item.name + " expects " + expectation.path, equalJson(actual, expectation.equals));
+      } else if (Object.prototype.hasOwnProperty.call(expectation, "notEquals")) {
+        assert("Fixture " + item.name + " rejects " + expectation.path, !equalJson(actual, expectation.notEquals));
+      } else {
+        throw new Error("Unsupported fixture assertion in " + item.name + ": " + expectation.path);
+      }
+    });
+  });
 }
 
 function testScripts() {
@@ -257,5 +303,6 @@ function testModuleRules() {
 }
 
 testScripts();
+testBehaviorFixtures();
 testModuleRules();
 console.log("all Shadowrocket local checks passed (" + assertions + " checks)");

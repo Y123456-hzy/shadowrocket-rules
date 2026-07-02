@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "name": "Bilibili splash payload is emptied",
+      "script": "startup-ad-clean.js",
+      "url": "https://app.bilibili.com/x/v2/splash/list",
+      "body": {
+        "code": 0,
+        "data": {
+          "list": [{ "id": 1 }],
+          "show": [{ "id": 2 }]
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.list.length", "equals": 0 },
+        { "path": "bodyJson.data.max_time", "equals": 0 }
+      ]
+    },
+    {
+      "name": "Bilibili feed ads are filtered",
+      "script": "startup-ad-clean.js",
+      "url": "https://app.bilibili.com/x/v2/feed/index",
+      "body": {
+        "data": {
+          "items": [
+            { "id": 1, "title": "normal" },
+            { "id": 2, "is_ad": true },
+            { "id": 3, "card_goto": "ad_web" }
+          ]
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.items.length", "equals": 1 },
+        { "path": "bodyJson.data.items.0.id", "equals": 1 }
+      ]
+    },
+    {
+      "name": "Generic startup cleanup avoids unrelated content",
+      "script": "startup-ad-clean.js",
+      "url": "https://example.com/splash/list",
+      "body": {
+        "data": {
+          "user": { "name": "ok" },
+          "ad_list": [{ "id": 1 }],
+          "interval": 8
+        }
+      },
+      "assertions": [
+        { "path": "bodyJson.data.ad_list.length", "equals": 0 },
+        { "path": "bodyJson.data.user.name", "equals": "ok" },
+        { "path": "bodyJson.data.interval", "equals": 31536000 }
+      ]
+    },
+    {
+      "name": "Coolapk feed ads are filtered",
+      "script": "coolapk-clean.js",
+      "url": "https://api.coolapk.com/v6/dataList",
+      "body": {
+        "data": [
+          { "id": 1, "title": "normal" },
+          { "id": 2, "isAd": true, "title": "normal ad card" },
+          { "id": 945, "title": "known ad" }
+        ]
+      },
+      "assertions": [
+        { "path": "bodyJson.data.length", "equals": 1 },
+        { "path": "bodyJson.data.0.id", "equals": 1 }
+      ]
+    },
+    {
+      "name": "Pangolin request gets no-fill response",
+      "script": "ad-sdk-no-fill.js",
+      "url": "https://api-access.pangolin-sdk-toutiao.com/api/ad/union/sdk/get_ads/?x=1",
+      "hasResponse": false,
+      "assertions": [
+        { "path": "result.response.status", "equals": 200 },
+        { "path": "responseBodyJson.status_code", "equals": 20001 }
+      ]
+    },
+    {
+      "name": "GDT response gets no-fill body",
+      "script": "ad-sdk-no-fill.js",
+      "url": "https://win.gdt.qq.com/gdt_mview.fcg?x=1",
+      "body": {
+        "old": true
+      },
+      "assertions": [
+        { "path": "bodyJson.ret", "equals": 102006 },
+        { "path": "bodyJson.data", "equals": {} }
+      ]
+    }
+  ]
+}

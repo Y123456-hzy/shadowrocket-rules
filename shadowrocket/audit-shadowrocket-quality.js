@@ -11,6 +11,7 @@ const path = require("path");
 
 const root = __dirname;
 const modulePath = path.join(root, "ios-ipados-startup-adblock.sgmodule");
+const fixturePath = path.join(root, "fixtures", "behavior-cases.json");
 const text = fs.readFileSync(modulePath, "utf8");
 const json = process.argv.indexOf("--json") >= 0;
 
@@ -56,6 +57,16 @@ const scripts = linesInSection("Script");
 const rewrites = linesInSection("URL Rewrite");
 const rawRules = linesInSection("Rule");
 const rules = rawRules.map(parseRule);
+let behaviorFixture = null;
+try {
+  behaviorFixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+} catch (error) {
+  behaviorFixture = null;
+}
+const fixtureCases = behaviorFixture && behaviorFixture.schema_version === 1 && Array.isArray(behaviorFixture.cases)
+  ? behaviorFixture.cases
+  : [];
+const fixtureScripts = new Set(fixtureCases.map((item) => item.script));
 const mitmLine = linesInSection("MITM").find((line) => line.indexOf("hostname =") === 0) || "";
 const mitmHosts = mitmLine
   .replace(/^hostname\s*=\s*%APPEND%\s*/, "")
@@ -149,6 +160,7 @@ addCheck(checks, "MITM hygiene", 12, /^hostname\s*=\s*%APPEND%/.test(mitmLine) &
 addCheck(checks, "rule conflict hygiene", 12, duplicateRules.length === 0 && exactConflicts.length === 0 && suffixConflicts.length === 0 && !rules.slice(rules.findIndex((rule) => /^REJECT/.test(rule.policy || "")) + 1).some((rule) => rule.policy === "DIRECT"), "no duplicate rules, no direct/reject conflicts, direct before reject");
 addCheck(checks, "low false-positive generic rule", 12, genericRe && !genericRe.test("https://m.10099.com.cn/h5wap/promotion") && genericRe.test("https://example.com/splash/list") && !genericRe.test("https://example.com/promotion/list") && !genericRe.test("https://example.com/commercial/list") && !genericRe.test("https://example.com/campaign/list"), "catch startup terms, avoid broad business terms");
 addCheck(checks, "no-fill script coverage", 14, sdkSamples.every((url) => sdkRegexes.some((re) => re.test(url))) && sdkSamples.every((url) => !rewriteRegexOnly.some((re) => re.test(url))) && noFillHosts.every((host) => mitmHosts.indexOf(host) >= 0), "covered by script, not preempted by rewrite, MITM hosts aligned");
+addCheck(checks, "behavior fixture coverage", 10, fixtureCases.length >= 6 && ["startup-ad-clean.js", "coolapk-clean.js", "ad-sdk-no-fill.js"].every((file) => fixtureScripts.has(file)) && fixtureCases.every((item) => item.name && item.script && item.url && Array.isArray(item.assertions) && item.assertions.length > 0), "fixture schema, sample count, and all response scripts covered");
 addCheck(checks, "10099 service hall bypass", 5, rawRules.indexOf("DOMAIN-SUFFIX,10099.com.cn,DIRECT") >= 0 && !mitmHosts.some((host) => /(?:^|\.)10099\.com\.cn$/i.test(host)), "direct and not MITM");
 
 const total = checks.reduce((sum, check) => sum + check.weight, 0);
